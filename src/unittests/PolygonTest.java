@@ -90,6 +90,7 @@ public class PolygonTest {
         double sqrt3 = Math.sqrt(1d / 3);
 
 
+
         assertTrue(pl.getNormal(new Point3D(0, 0, 1)).equals(new Vector(1, 1, 1).normalize())||pl.getNormal(new Point3D(0, 0, 1)).equals(new Vector(1, 1, 1).scale(-1).normalize()));
 
     }

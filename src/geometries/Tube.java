@@ -16,7 +16,11 @@ public class Tube extends RadialGeometry {
      */
     public Tube(double _radius, Ray axe) {
         super(_radius);
-        this.axe = axe;
+        try{this.axe = axe;}
+        catch (Exception ex)// if Ray's constructor has thrown exception <- if vector was null vector
+        {
+            throw ex;
+        }
     }
 
     /**

@@ -7,7 +7,7 @@ import primitives.*;
 import static org.junit.jupiter.api.Assertions.*;
 /**
  * Class SphereTest is a test class for sphere's fuctions
- * radial geometrical objects
+ * (no check needed for constructor - it can't throw exception or make smth except for simple initiation by the '=' operator
  * Authors : Polina Frolov Korogodsky and Tselia Tebol
  */
 class SphereTest {
@@ -31,7 +31,6 @@ Sphere s3 = new Sphere (0.5, new Point3D(0, 0, 0));
             assertTrue(s3.getNormal(new Point3D(0, 0.5, 0)).equals(new Vector(0, 1, 0)));
 
 
-        //==========================Equivalence Partitioning=====================
         //Point inside the sphere
         boolean isCorrect = false;
         try{
@@ -41,7 +40,7 @@ Sphere s3 = new Sphere (0.5, new Point3D(0, 0, 0));
             isCorrect = true;
         }
         assertTrue(isCorrect);
-        //==========================Equivalence Partitioning=====================
+
         //Point outside the sphere
         isCorrect = false;
         try{
@@ -51,6 +50,14 @@ Sphere s3 = new Sphere (0.5, new Point3D(0, 0, 0));
             isCorrect = true;
         }assertTrue(isCorrect);
 
+    }
+
+    /**
+     * toString() member method check
+     */
+    @Test
+    void toStringTest(){
+        assertTrue(s1.toString().equals("Sphere{center=Point3D:(0.0,0.0,0.0) RadialGeometry: radius =  1.0} "));
     }
 
 }
