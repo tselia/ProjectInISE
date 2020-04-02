@@ -20,6 +20,14 @@ public class Vector {
     }
 
     /**
+     * multiplies a vector by scalar
+     * @param factor
+     * @return
+     */
+    public Vector scale (double factor){
+        return new Vector(this.end.getX()._coord*factor, this.end.getY()._coord*factor, this.end.getZ()._coord*factor);
+    }
+    /**
      * Constructor receives three double
      * @param _x
      * @param _y
@@ -85,11 +93,13 @@ public class Vector {
      */
     public Vector normalize() {
         double distance = this.length();
+       // System.out.println(distance);
         if (distance != 1) {
             double ex = (end.getX()._coord) / distance;
             double ya = (end.getY()._coord) / distance;
             double zed = (end.getZ()._coord) / distance;
             Point3D point = new Point3D(new Coordinate(ex), new Coordinate(ya), new Coordinate(zed));
+           // System.out.println(point);
             this.end = point;
            //            this. = new Vector(point);
         }
@@ -150,6 +160,8 @@ public Vector normalized(){
         double newX = (this.end.getY()._coord * vec.end.getZ()._coord)-(this.end.getZ()._coord * vec.end.getY()._coord);
         double newY = -((this.end.getX()._coord * vec.end.getZ()._coord)-(this.end.getZ()._coord * vec.end.getX()._coord));
         double newZ = (this.end.getX()._coord * vec.end.getY()._coord)-(this.end.getY()._coord * vec.end.getX()._coord);
+        if (newX==0&&newY==0&&newZ==0)
+            throw new ArithmeticException ("perpendicular vectors, cross product is 0");
         return new Vector(newX, newY, newZ);
     }
 

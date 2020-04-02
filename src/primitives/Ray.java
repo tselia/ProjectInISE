@@ -68,4 +68,29 @@ public class Ray {
             return true;
         return  false;
     }
+
+    /*/**
+     * function checks whether some point belongs to the ray by checking whether the Vector from this point is opposite to the direction vector
+     * Made to make polygon constructor checks easier (To check whether Three points are on the same ray
+     * @param point
+     * @return
+     */
+ /*   public boolean containsPoint3D(Point3D point){
+        Vector fromPointToStartPoint = new Vector(point.subtract(start));
+        if(!(fromPointToStartPoint.normalize().equals(direction.scale(-1))))
+            return false;
+        return true;
+    }*/
+
+   /* //**
+     * Function checks whether afret some point two rays will coincide
+     * @param other
+     * @return
+     //*/
+/*    public boolean coincide(Ray other){
+        if (this.direction!=other.direction||this.direction!=other.direction.scale(-1))
+            return false;
+
+    }*/
+
 }
