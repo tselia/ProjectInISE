@@ -32,7 +32,7 @@ public class Cylinder extends Tube{
         //whether the point is on base
         if (point.subtract(this.axe.getStart()).dotProduct(this.axe.getDirection()) == 0)//if the point is in the same plane that starting surface
             if (point.subtract(this.axe.getStart()).length() <= _radius) //if the point is in the down circle
-                return this.axe.getDirection();
+                return this.axe.getDirection().scale(-1);
             else throw new IllegalArgumentException("Point is outside the tube");
         //Whether the point is on the upper surface
         Point3D finalCircleCenter = new Point3D(this.axe.getStart().add(this.axe.getDirection().scale(this.height)));

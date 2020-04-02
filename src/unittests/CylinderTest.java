@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CylinderTest {
 Cylinder cylinder = new Cylinder(2, new Ray(new Point3D(0, 0, 0), new Vector(1, 0, 0)), 5);
+Cylinder cylinder2 = new Cylinder(3, new Ray (new Point3D(0, 0, 0), new Vector(0, 0, 1)), 5);
     @Test
     void getNormal() {
         //====================Equivalent Partitioning===========================
@@ -38,7 +39,7 @@ Cylinder cylinder = new Cylinder(2, new Ray(new Point3D(0, 0, 0), new Vector(1, 
         }
         assertTrue(isCorrect);
 
-        // all other checks are same to tube, and that's the reason why their tests are not implemented here
+        assertTrue(cylinder2.getNormal(new Point3D(1, 2, 0)).equals(new Vector(0, 0, -1)));
 
     }
 
