@@ -1,5 +1,8 @@
 package geometries;
 import primitives.*;
+
+import java.util.List;
+
 /**
  * Class Cylinder is a basic abstract representation of cylinder geometry, contains Radius and height
  * radial geometrical objects
@@ -91,5 +94,8 @@ public class Cylinder extends Tube{
         return ((super.equals(o))&&(Double.compare(cylinder.getHeight(), getHeight()) == 0));
     }
 
-
+    @Override
+    public List<Point3D> findIntersections(Ray ray) {
+        return null;
+    }
 }

@@ -1,11 +1,14 @@
 package geometries;
 
 import primitives.*;
+
+import java.util.List;
+
 /**
  * Class plane is a basic representation of plane
  * Authors - Polina Frolov Korogodsky and Tselia Tebol
  */
-public class Plane {
+public class Plane implements Intersectable{
     Point3D point;
     Vector normal;
 
@@ -66,4 +69,9 @@ public class Plane {
                 ", normal=" + normal +
                 '}';
     }
+    @Override
+    public List<Point3D> findIntersections(Ray ray) {
+        return null;
+    }
+
 }

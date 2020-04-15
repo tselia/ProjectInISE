@@ -20,7 +20,7 @@ Cylinder cylinder2 = new Cylinder(3, new Ray (new Point3D(0, 0, 0), new Vector(0
     @Test
     void getNormal() {
         //====================Equivalent Partitioning===========================
-        //TC1: the point on upper base's edge
+        //TC1: the point on upper base's edge (Boundary Value Analysis)
             assertTrue(cylinder.getNormal(new Point3D(5, 2, 0)).equals(new Vector(1, 0, 0)));
         //TC2: the point is on upper base but not on the edge
 

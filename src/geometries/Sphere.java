@@ -2,6 +2,8 @@ package geometries;
 
 import primitives.*;
 
+import java.util.List;
+
 /**
  * Class Sphere is a basic abstract representation of Sphere, contains Radius and the Center point
  * radial geometrical objects
@@ -56,5 +58,9 @@ Point3D center;
         return "Sphere{" +
                 "center=" + center +
                 " " + super.toString()+"} ";
+    }
+    @Override
+    public List<Point3D> findIntersections(Ray ray) {
+        return null;
     }
 }

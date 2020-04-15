@@ -1,5 +1,8 @@
 package geometries;
 import primitives.*;
+
+import java.util.List;
+
 /**
  * Class Tube is a basic abstract representation of Tube Geometry, contains Radius and the Axe ray
  * radial geometrical objects
@@ -73,5 +76,9 @@ public class Tube extends RadialGeometry {
         return "Tube{" +
                 "axe=" + axe +
                 " " + super.toString() + "} ";
+    }
+    @Override
+    public List<Point3D> findIntersections(Ray ray) {
+        return null;
     }
 }

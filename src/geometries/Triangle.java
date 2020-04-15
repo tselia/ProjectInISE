@@ -1,6 +1,7 @@
 package geometries;
 
 import primitives.Point3D;
+import primitives.Ray;
 import primitives.Vector;
 /**
  * Class Triangle is a basic representation of triangle geometry as a son class of polygon
@@ -38,6 +39,10 @@ public class Triangle extends Polygon {
         return "Triangle{" +
                 "_vertices=" + _vertices +
                 "} ";
+    }
+    @Override
+    public List<Point3D> findIntersections(Ray ray) {
+        return null;
     }
 
 }
