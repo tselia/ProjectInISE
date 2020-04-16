@@ -3,6 +3,8 @@ package unittests;
 import org.junit.jupiter.api.Test;
 import geometries.*;
 import primitives.*;
+import primitives.Vector;
+
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,11 +68,14 @@ Sphere s3 = new Sphere (0.5, new Point3D(0, 0, 0));
      */
     @Test
     public void testFindIntersections() {
-        Sphere sphere = new Sphere(1d, new Point3D(1, 0, 0));
+        Sphere sphere = new Sphere(1d, new Point3D(1, 0, 0));//1d means "1 double"
 
         // ============ Equivalence Partitions Tests ==============
 
         // TC01: Ray's line is outside the sphere (0 points)
+        Ray ray = new Ray(new Point3D(-10,0,0), new Vector(0,0,1));
+        assertTrue(sphere.findIntersections(ray).isEmpty());
+
 
 
         // TC02: Ray starts before and crosses the sphere (2 points)
@@ -78,17 +83,29 @@ Sphere s3 = new Sphere (0.5, new Point3D(0, 0, 0));
         Point3D p2 = new Point3D(1.53484692283495, 0.844948974278318, 0);
         List<Point3D> result = sphere.findIntersections(new Ray(new Point3D(-1, 0, 0),
                 new primitives.Vector(3, 1, 0)));
+        assertTrue(result.contains(p1)&&result.contains(p2)&&result.size()==2);
 
 
         // TC03: Ray starts inside the sphere (1 point)
+        List<Point3D> intersetionPoints=sphere.findIntersections(new Ray(new Point3D(1, 0, 0), new Vector(0, 0, 1)));
+        assertTrue(sphere.findIntersections(new Ray(new Point3D(1, 0, 0), new Vector(0, 0, 1))).contains(new Point3D(1, 0, 1)));
+        intersetionPoints.remove(new Point3D(1, 0, 1));
+        assertTrue(intersetionPoints.isEmpty());// checks that no other points were found as intersection points
+
 
         // TC04: Ray starts after the sphere (0 points)
+        assertTrue(sphere.findIntersections(new Ray(new Point3D(10, 0, 0), new Vector(0, 0, 1))).isEmpty());
+
 
 
         // =============== Boundary Values Tests ==================
 
         // **** Group: Ray's line crosses the sphere (but not the center)
         // TC11: Ray starts at sphere and goes inside (1 points)
+        assertTrue(sphere.findIntersections(new Ray(new Point3D(1,1, 0), new Vector(-0.2, -0.5, 0.84261497))).contains(new Point3D(-0.2, -0.5, 0.84261497)));
+        assertTrue(sphere.findIntersections(new Ray(new Point3D(1,1, 0), new Vector(-0.2, -0.5, 0.84261497))).size()==1);// the ues is whether I've counted well
+
+
         // TC12: Ray starts at sphere and goes outside (0 points)
 
         // **** Group: Ray's line goes through the center
