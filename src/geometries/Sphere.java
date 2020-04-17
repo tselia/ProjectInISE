@@ -72,8 +72,8 @@ Point3D center;
             double thCoefficient = Math.sqrt(_radius * _radius - distance * distance);
             double t1 = tmCoefficient + thCoefficient;
             double t2 = tmCoefficient - thCoefficient;
-            System.out.println(t1);
-            System.out.println(t2);
+            //System.out.println(t1);
+            //System.out.println(t2);
             if (Util.alignZero(t1) <= 0 && Util.alignZero(t2) <= 0)
                 return null;
            if (Util.alignZero(t1) ==Util.alignZero(t2))
