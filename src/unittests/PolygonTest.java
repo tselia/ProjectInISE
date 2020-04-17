@@ -94,5 +94,27 @@ public class PolygonTest {
         assertTrue(pl.getNormal(new Point3D(0, 0, 1)).equals(new Vector(1, 1, 1).normalize())||pl.getNormal(new Point3D(0, 0, 1)).equals(new Vector(1, 1, 1).scale(-1).normalize()));
 
     }
+    @Test
+    void intersectionPoints(){
+        // ============ Equivalence Partitions Tests ==============
+        //TC01: The ray starts before the polygon (1 point)
+        //TC02: The ray's line crosses the polygon but the ray starts after the polygon(0 points)
+        //TC03: The ray's line belongs to the polygon's plane (0 points)
+        //=================Boundary values tests=================
+        //****group: the ray starts at the vertex (all tests 0 points)
+        //TC11: The ray starts at the vertex and goes outside
+        //TC12: The ray starts at the vertex and goes inside
+        //TC13: The ray starts at the vertex and it's line is one of the edges
+        //TC14: The ray starts at vertex and it's line doesn't belong to the polygon's plane
+
+        //****group: the ray crosses the vertex (all tests 0 points)
+        //TC15: The ray starts inside the polygon , crosses the vertex and goes outside
+        //TC16: The ray starts outside the polygon on it's plane , crosses the vertex and goes inside
+        //TC17: The ray starts outside the polygon, crosses the vertex and it's line is one of the edges
+        //TC18: The ray starts outside, crosses the vertex and it's line doesn't belong to the polygon's plane
+
+        //***group: the ray starts at the edge
+        //TC19:
+    }
 
 }
