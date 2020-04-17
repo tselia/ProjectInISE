@@ -1,5 +1,6 @@
 package geometries;
 
+import java.util.ArrayList;
 import java.util.List;
 import primitives.*;
 import static primitives.Util.*;
@@ -86,7 +87,35 @@ public class Polygon implements Geometry {
     }
     @Override
     public List<Point3D> findIntersections(Ray ray) {
-        return null;
+        Point3D intersectionPoint = _plane.findIntersections(ray).get(0);
+        for (int i = 0; i < _vertices.size(); i++){
+            if (intersectionPoint.equals(_vertices.get(i)))
+                return null;
+    }
+        int s = _vertices.size();
+        Vector[] edges = new Vector[s];
+        for(int i=0; i< s; i++){
+            edges[i]=_vertices.get(i).subtract(ray.getStart());
+
+        }
+        double previous = edges[0].crossProduct(edges[1]).normalize().dotProduct(ray.getDirection());
+        if (Util.isZero(previous))
+            return null;
+        for (int i=1; i<s; i++){
+            double current  = edges[i].crossProduct(edges[(i+1)%s]).normalize().dotProduct(ray.getDirection());
+            if(Util.isZero(current))
+                return null;
+            if (Util.alignZero(current)>0&&Util.alignZero(previous)<0)
+                return null;
+            if (Util.alignZero(current)<0&&Util.alignZero(previous)>0)
+                return null;
+
+        }
+        List<Point3D> intersectionPoints = new ArrayList<Point3D>();
+        intersectionPoints.add(intersectionPoint);
+        return intersectionPoints;
+
+
     }
 }
 
