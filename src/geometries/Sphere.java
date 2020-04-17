@@ -1,8 +1,10 @@
 package geometries;
 
 import primitives.*;
+import primitives.Vector;
 
-import java.util.List;
+import java.util.*;
+import java.lang.*;
 
 /**
  * Class Sphere is a basic abstract representation of Sphere, contains Radius and the Center point
@@ -61,6 +63,44 @@ Point3D center;
     }
     @Override
     public List<Point3D> findIntersections(Ray ray) {
-        return null;
+        if(!ray.getStart().equals(center)) {
+            Vector u = this.center.subtract(ray.getStart());
+            double tmCoefficient = u.dotProduct(ray.getDirection());
+            double distance = Math.sqrt(u.lengthSquared() - (tmCoefficient * tmCoefficient));
+            if (distance > this._radius)
+                return null;
+            double thCoefficient = Math.sqrt(_radius * _radius - distance * distance);
+            double t1 = tmCoefficient + thCoefficient;
+            double t2 = tmCoefficient - thCoefficient;
+            System.out.println(t1);
+            System.out.println(t2);
+            if (Util.alignZero(t1) <= 0 && Util.alignZero(t2) <= 0)
+                return null;
+           if (Util.alignZero(t1) ==Util.alignZero(t2))
+               if (ray.getStart().distance(center)>=_radius)
+                return null;
+           // if (Util.alignZero(t2)==Util.alignZero(t1))
+             //   if(ray.getStart().distance(center)>)
+            List<Point3D> intersectionPoints = new ArrayList<Point3D>();
+            if (Util.alignZero(t1) > 0)
+                intersectionPoints.add(ray.getStart().add(ray.getDirection().scale(t1)));
+            if (Util.alignZero(t2) > 0&&Util.alignZero(t2)!=Util.alignZero(t1)) {
+                //System.out.println(ray.getStart());
+                //System.out.println(ray.getDirection());
+                //System.out.println(t2);
+                //System.out.println(ray.getDirection().scale(t2));
+                intersectionPoints.add(ray.getStart().add(ray.getDirection().scale(t2)));
+            }
+            return intersectionPoints;
+        }
+        else {
+            List<Point3D> intersectionPoints = new ArrayList<Point3D>();
+            intersectionPoints.add(center.add(ray.getDirection().scale(_radius)));
+            return intersectionPoints;
+
+
+        }
+
+        }
     }
-}
+
