@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import geometries.*;
 import primitives.*;
 
+import java.util.List;
+
 /**
  * Testing Polygons
  * @author Dan
@@ -97,24 +99,27 @@ public class PolygonTest {
     @Test
     void intersectionPoints(){
         // ============ Equivalence Partitions Tests ==============
-        //TC01: The ray starts before the polygon (1 point)
-        //TC02: The ray's line crosses the polygon but the ray starts after the polygon(0 points)
-        //TC03: The ray's line belongs to the polygon's plane (0 points)
-        //=================Boundary values tests=================
-        //****group: the ray starts at the vertex (all tests 0 points)
-        //TC11: The ray starts at the vertex and goes outside
-        //TC12: The ray starts at the vertex and goes inside
-        //TC13: The ray starts at the vertex and it's line is one of the edges
-        //TC14: The ray starts at vertex and it's line doesn't belong to the polygon's plane
+        Polygon polygon = new Polygon(new Point3D(1, 2, 5), new Point3D(-3, 2, 5), new Point3D(-3, -2, 5), new Point3D(1, -2, 5));
+        //TC01:Inside
+        Ray ray01 = new Ray(new Point3D(-1, 1, 3), new Vector(0, 0, 1));
+        List<Point3D> points01 = polygon.findIntersections(ray01);
+        assertTrue(points01.contains(new Point3D(-1, 1, 5)));
+        assertEquals(points01.size(), 1);
 
-        //****group: the ray crosses the vertex (all tests 0 points)
-        //TC15: The ray starts inside the polygon , crosses the vertex and goes outside
-        //TC16: The ray starts outside the polygon on it's plane , crosses the vertex and goes inside
-        //TC17: The ray starts outside the polygon, crosses the vertex and it's line is one of the edges
-        //TC18: The ray starts outside, crosses the vertex and it's line doesn't belong to the polygon's plane
+        //TC02: Outside against edge
 
-        //***group: the ray starts at the edge
-        //TC19:
+        Ray ray02 = new Ray(new Point3D(2, 0, 3), new Vector(0, 0, 1));
+        assertNull(polygon.findIntersections(ray02));
+        //TC03: Outside against the vertex
+        Ray ray03 = new Ray(new Point3D(2, 3, 3), new Vector(0, 0, 1));
+        assertNull(polygon.findIntersections(ray03));
+        //=================BVA==========================
+        // TC11:On edge
+        assertNull(polygon.findIntersections(new Ray(new Point3D(1, 1, 3), new Vector(0, 0, 1))));
+        // TC12: On Vertex
+        assertNull(polygon.findIntersections(new Ray(new Point3D(-3, 2, 3), new Vector(0, 0, 1))));
+        // TC13: On edge's continuation
+        assertNull(polygon.findIntersections(new Ray(new Point3D(3, 2, 1), new Vector(0, 0, 1))));
     }
 
 }
