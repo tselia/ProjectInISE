@@ -112,7 +112,6 @@ Sphere s3 = new Sphere (0.5, new Point3D(0, 0, 0));
            System.out.println("Line1");
           // Vector vec = new Vector(-0.2, -0.5, 0.84261497);
            //System.out.println("Vector created");
-           System.out.println(sphere.findIntersections(new Ray(new Point3D(1, 1, 0), new Vector(-0.2, -0.5, 0.84261497))).get(0));
            assertTrue(sphere.findIntersections(new Ray(new Point3D(1, 1, 0), new Vector(-0.2, -0.5, 0.84261497))).contains(new Point3D(0.7999999975336202, 0.49999999383405036, 0.8426149803910429)));
            System.out.println("Line2 ");
            assertTrue(sphere.findIntersections(new Ray(new Point3D(1, 1, 0), new Vector(-0.2, -0.5, 0.84261497))).size() == 1);// the ues is whether I've counted well
