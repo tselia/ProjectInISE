@@ -100,6 +100,12 @@ public class PolygonTest {
     void intersectionPoints(){
         // ============ Equivalence Partitions Tests ==============
         Polygon polygon = new Polygon(new Point3D(1, 2, 5), new Point3D(-3, 2, 5), new Point3D(-3, -2, 5), new Point3D(1, -2, 5));
+        Polygon tri = new Triangle(new Point3D(1, 1, 0), new Point3D(0, 0, 1), new Point3D(0, 1, 0));
+        if(tri.findIntersections(new Ray(new Point3D(-1, 1, 3), new Vector(0, 0, 1)))==null)
+            System.out.println("Triangle has no intersections");
+        //if(polygon.findIntersections(new Ray(new Point3D(2, 0, 3), new Vector(0, 0, 1)))==null)
+           // System.out.println("Polygon has no intersections");
+        //System.out.println(polygon.findIntersections(new Ray(new Point3D(-1, 1, 3), new Vector(0, 0, 1))).size());
         //TC01:Inside
         Ray ray01 = new Ray(new Point3D(-1, 1, 3), new Vector(0, 0, 1));
         List<Point3D> points01 = polygon.findIntersections(ray01);
@@ -120,6 +126,12 @@ public class PolygonTest {
         assertNull(polygon.findIntersections(new Ray(new Point3D(-3, 2, 3), new Vector(0, 0, 1))));
         // TC13: On edge's continuation
         assertNull(polygon.findIntersections(new Ray(new Point3D(3, 2, 1), new Vector(0, 0, 1))));
+
+
+       //System.out.println(tri.findIntersections((new Ray(new Point3D(-1, 0, 0),
+        //        new primitives.Vector(3, 1, 0)))));
+        //System.out.println(polygon.findIntersections((new Ray(new Point3D(-1, 0, 0),
+          //      new primitives.Vector(3, 1, 0)))));
     }
 
 }

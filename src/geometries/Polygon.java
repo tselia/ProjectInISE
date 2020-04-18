@@ -87,6 +87,10 @@ public class Polygon implements Geometry {
     }
     @Override
     public List<Point3D> findIntersections(Ray ray) {
+        List<Point3D> interPoints = _plane.findIntersections(ray);
+        if(interPoints == null)
+            return null;
+
         Point3D intersectionPoint = _plane.findIntersections(ray).get(0);
         for (int i = 0; i < _vertices.size(); i++){
             if (intersectionPoint.equals(_vertices.get(i)))

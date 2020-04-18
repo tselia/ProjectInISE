@@ -69,6 +69,10 @@ Sphere s3 = new Sphere (0.5, new Point3D(0, 0, 0));
     @Test
     public void testFindIntersections() {
         Sphere sphere = new Sphere(1d, new Point3D(1, 0, 0));//1d means "1 double"
+        Sphere sphere2 = new Sphere(10, new Point3D(0, 1, 0));
+        if(sphere.findIntersections(new Ray(new Point3D(-1, 1, 3), new Vector(0, 0, 1)))==null)
+            System.out.println("Sphere has no intersections");
+            //System.out.println(sphere2.findIntersections(new Ray(new Point3D(-1, 1, 3), new Vector(0, 0, 1))).size());
 
         // ============ Equivalence Partitions Tests ==============
 
@@ -161,6 +165,8 @@ Sphere s3 = new Sphere (0.5, new Point3D(0, 0, 0));
         // TC19: Ray's line is outside, ray is orthogonal to ray start to sphere's center line
         System.out.println("TC19.1: ");
         assertTrue(sphere.findIntersections(new Ray(new Point3D(1, 1, 0), sphere.getNormal(new Point3D(1, 1, 0))))==null);
+
+
 
     }
 
