@@ -69,6 +69,15 @@ public class Ray {
         return  false;
     }
 
+    /**
+     * function that returns the point on the ray on the distance t from the start of the ray
+     * @param t
+     * @return Point3D
+     */
+    public Point3D getPoint(double t){
+        return new Point3D(start.add(direction.scale(t)));
+    }
+
     /*/**
      * function checks whether some point belongs to the ray by checking whether the Vector from this point is opposite to the direction vector
      * Made to make polygon constructor checks easier (To check whether Three points are on the same ray

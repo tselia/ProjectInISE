@@ -89,7 +89,7 @@ public class Plane implements Intersectable {
             else {
                 List<Point3D> intersectionPoints = new ArrayList<Point3D>();
                 //Point3D intersectionPoint = new Point3D(ray.getStart().add(ray.getDirection().scale(coefficient)));
-                intersectionPoints.add(new Point3D(ray.getStart().add(ray.getDirection().scale(coefficient))));
+                intersectionPoints.add(ray.getPoint(coefficient));
                 return intersectionPoints;
             }
         } else {
@@ -103,7 +103,7 @@ public class Plane implements Intersectable {
             else {
                 List<Point3D> intersectionPoints = new ArrayList<Point3D>();
                 //Point3D intersectionPoint = new Point3D(ray.getStart().add(ray.getDirection().scale(coefficient)));
-                intersectionPoints.add(new Point3D(ray.getStart().add(ray.getDirection().scale(coefficient))));
+                intersectionPoints.add(ray.getPoint(coefficient));
                 return intersectionPoints;
             }
         }

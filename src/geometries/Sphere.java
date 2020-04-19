@@ -83,13 +83,9 @@ Point3D center;
              //   if(ray.getStart().distance(center)>)
             List<Point3D> intersectionPoints = new ArrayList<Point3D>();
             if (Util.alignZero(t1) > 0)
-                intersectionPoints.add(ray.getStart().add(ray.getDirection().scale(t1)));
+                intersectionPoints.add(ray.getPoint((t1)));
             if (Util.alignZero(t2) > 0&&Util.alignZero(t2)!=Util.alignZero(t1)) {
-                //System.out.println(ray.getStart());
-                //System.out.println(ray.getDirection());
-                //System.out.println(t2);
-                //System.out.println(ray.getDirection().scale(t2));
-                intersectionPoints.add(ray.getStart().add(ray.getDirection().scale(t2)));
+                intersectionPoints.add(ray.getPoint(t2));
             }
             return intersectionPoints;
         }
