@@ -96,6 +96,9 @@ public class PolygonTest {
         assertTrue(pl.getNormal(new Point3D(0, 0, 1)).equals(new Vector(1, 1, 1).normalize())||pl.getNormal(new Point3D(0, 0, 1)).equals(new Vector(1, 1, 1).scale(-1).normalize()));
 
     }
+    /**
+     * Test method for findIntersections()
+     */
     @Test
     void intersectionPoints(){
         // ============ Equivalence Partitions Tests ==============

@@ -66,6 +66,10 @@ public class Plane implements Intersectable {
         return point;
     }
 
+    /**
+     * returns a string describing the plane
+     * @return
+     */
     @Override
     public String toString() {
         return "Plane{" +
@@ -73,7 +77,11 @@ public class Plane implements Intersectable {
                 ", normal=" + normal +
                 '}';
     }
-
+    /**
+     * Method to get intersection points with a specific ray
+     * @param ray (Ray)
+     * @return List(Point3D)
+     */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
         if (ray.getStart().equals(point))

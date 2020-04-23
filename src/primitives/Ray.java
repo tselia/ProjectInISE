@@ -75,7 +75,12 @@ public class Ray {
      * @return Point3D
      */
     public Point3D getPoint(double t){
-        return new Point3D(start.add(direction.scale(t)));
+
+        if (t>0)
+            return new Point3D(start.add(direction.scale(t)));
+        if(t==0)
+            return this.start;
+        else throw new IllegalArgumentException("The point is outside the ray");
     }
 
     /*/**

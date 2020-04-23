@@ -12,7 +12,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * Authors - Polina Frolov Korogodsky and Tselia Tebol
  */
 class TriangleTest {
-
+    /**
+     * Test method for findIntersections()
+     */
     @Test
     void findIntersections() {
         Vector k=new Vector(0, 0, 1);

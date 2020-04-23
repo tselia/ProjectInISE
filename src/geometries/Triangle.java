@@ -40,6 +40,12 @@ public class Triangle extends Polygon {
                 "_vertices=" + _vertices +
                 "} ";
     }
+
+    /**
+     * Method to get intersection points with a specific ray
+     * @param ray (Ray)
+     * @return List(Point3D)
+     */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
         return super.findIntersections(ray);

@@ -8,5 +8,10 @@ import java.util.*;
  * Authors - Polina Frolov Korogodsky and Tselia Tebol
  */
 public interface Intersectable {
+    /**
+     * The method of getting the intersection points with the ray
+     * @param ray
+     * @return
+     */
     List<Point3D> findIntersections(Ray ray);
 }

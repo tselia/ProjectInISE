@@ -81,10 +81,20 @@ public class Polygon implements Geometry {
         }
     }
 
+    /**
+     * returns an orthogonal vector to the polygon
+     * @param point (Point3D)
+     * @return Vector
+     */
     @Override
     public Vector getNormal(Point3D point) {
       return this._plane.getNormal();
     }
+    /**
+     * Method to get intersection points with a specific ray
+     * @param ray (Ray)
+     * @return List(Point3D)
+     */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
         List<Point3D> interPoints = _plane.findIntersections(ray);

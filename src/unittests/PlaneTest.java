@@ -39,7 +39,9 @@ Plane yx = new Plane(new Point3D(0, 17, 25), new Vector(0, 0, 1));
     void testToString() {
         assertTrue(xz.toString().equals("Plane{point="+xz.getPoint().toString() + ", normal=" + xz.getNormal().toString()+"}"));
     }
-
+    /**
+     * Test method for findIntersections()
+     */
     @Test
     void findIntersections() {
         //============EP==============
