@@ -1,4 +1,4 @@
-package unittests;
+package unittests.primitiveTests;
 
 import org.junit.jupiter.api.Test;
 import primitives.Coordinate;
