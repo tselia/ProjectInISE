@@ -9,6 +9,11 @@ import scene.Scene;
 
 import java.util.List;
 
+/**
+ *
+ * authors Polina Frolov Korogodsky and Tselia Tebol
+ */
+
 public class Render {
     private Scene scene;
     private  ImageWriter imageWriter ;
@@ -43,7 +48,7 @@ public class Render {
                 }
                 else {
                     Point3D closestPoint = getClosestPoint(intersectionPoints);
-                    imageWriter.writePixel(column-1, row-1, calcColor(closestPoint).getColor());
+                    imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint).getColor());
                 }
             }
         }

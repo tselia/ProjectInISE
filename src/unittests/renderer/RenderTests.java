@@ -4,6 +4,7 @@ import elements.AmbientLight;
 import elements.Camera;
 import geometries.Sphere;
 import geometries.Triangle;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import primitives.Color;
 import primitives.Point3D;
@@ -43,15 +44,13 @@ class RenderTests {
                 new Triangle(new Point3D(-100, 0, 100), new Point3D(0, -100, 100), new Point3D(-100, -100, 100)));
 
         ImageWriter imageWriter = new ImageWriter("base render test", 500, 500, 500, 500);
-        Render render = new Render(scene, imageWriter);
+        Render render = new Render(scene , imageWriter);
 
         render.renderImage();
         render.printGrid(50, java.awt.Color.YELLOW);
         render.writeToImage();
     }
 }
-
-
 
 
 
