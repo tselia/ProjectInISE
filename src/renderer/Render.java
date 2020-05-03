@@ -10,7 +10,7 @@ import scene.Scene;
 import java.util.List;
 
 /**
- *
+ * The Render class is a union of Scene and ImageWriter so that the specific scene could be printed  as picture
  * authors Polina Frolov Korogodsky and Tselia Tebol
  */
 
@@ -18,11 +18,19 @@ public class Render {
     private Scene scene;
     private  ImageWriter imageWriter ;
 
+    /**
+     *Constructor
+     * @param scene (Scene)
+     * @param imageWriter (ImageWriter)
+     */
     public Render(Scene scene, ImageWriter imageWriter) {
         this.scene = scene;
         this.imageWriter = imageWriter;
     }
 
+    /**
+     * The function that saves the 3D scene's 2D representation in matrix
+     */
     public void renderImage() {
         java.awt.Color background = scene.get_background().getColor();
         Camera camera= scene.get_camera();
@@ -54,10 +62,21 @@ public class Render {
         }
     }
 
+    /**
+     * function that should calculate the color of specific point
+     * @param p
+     * @return
+     */
     public Color calcColor(Point3D p) {
         return scene.get_ambientLight().get_intensity();
     }
 
+    /**
+     * function that checks which of the intersection points that were returned by findIntersections
+     * is the closest one to the camera
+     * @param points
+     * @return
+     */
     public Point3D getClosestPoint(List<Point3D> points) {
         Point3D closest = null;
         double t = Double.MAX_VALUE;
@@ -75,6 +94,11 @@ public class Render {
 
     }
 
+    /**
+     * function that makes grids of specific color on the picture's matrix
+     * @param interval
+     * @param color
+     */
     public void printGrid(int interval, java.awt.Color color) {
         double rows = this.imageWriter.getNx();
         double collumns = this.imageWriter.getNy();
@@ -87,7 +111,9 @@ public class Render {
         }
     }
 
-
+    /**
+     * function that saves matrix as picture
+     */
     public void writeToImage() {
         imageWriter.writeToImage();
     }

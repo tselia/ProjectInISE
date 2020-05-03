@@ -82,8 +82,10 @@ import static primitives.Util.isZero;
                                              double screenWidth, double screenHeight)
         {
             //return null ;
-            if (screenDistance<=0)
+            if (screenDistance<=0) {
+
                 throw new IllegalArgumentException("Screen distance should be a positive number");
+            }
             Point3D Pc = p0.add(vTo.scale(screenDistance));// first line of presentation
 
 
