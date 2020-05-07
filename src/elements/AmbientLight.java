@@ -11,7 +11,7 @@ public class AmbientLight {
 
     /**
      * Constructor computs the _intensity value by multiplying Ia by Ka
-     * @param Ia
+     * @param Ia java.awt.Color
      * @param Ka
      */
     public AmbientLight(java.awt.Color Ia, double Ka) {
@@ -24,5 +24,14 @@ public class AmbientLight {
      */
     public Color get_intensity() {
         return _intensity;
+    }
+    /**
+     * Constructor computs the _intensity value by multiplying Ia by Ka
+     * @param Ia primitives.Color
+     * @param Ka
+     */
+    public AmbientLight(primitives.Color Ia, double Ka) {
+        //Ia.getColor().
+        this._intensity = new Color(Ia.getColor().getRed()*Ka, Ia.getColor().getGreen()*Ka, Ia.getColor().getBlue()*Ka);
     }
 }

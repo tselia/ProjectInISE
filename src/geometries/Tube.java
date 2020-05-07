@@ -27,6 +27,22 @@ public class Tube extends RadialGeometry {
     }
 
     /**
+     * Constructor with Color parameter
+     * @param _emission
+     * @param _radius
+     * @param axe
+     */
+    public Tube(Color _emission, double _radius, Ray axe) {
+        super(_emission, _radius);
+        try{this.axe = axe;}
+        catch (Exception ex)// if Ray's constructor has thrown exception <- if vector was null vector
+        {
+            throw ex;
+        }
+    }
+
+
+    /**
      * returns null because by the exercise instructions should not yet be implemented; should return normal vector
      *
      * @param point
@@ -78,7 +94,7 @@ public class Tube extends RadialGeometry {
                 " " + super.toString() + "} ";
     }
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findIntersections(Ray ray) {
         return null;
     }
 }

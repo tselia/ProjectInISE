@@ -6,7 +6,7 @@ import primitives.*;
  * radial geometrical objects
  * Authors : Polina Frolov Korogodsky and Tselia Tebol
  */
-public abstract class RadialGeometry implements Geometry{
+public abstract class RadialGeometry extends Geometry {
 double _radius;
 
     /**
@@ -14,8 +14,20 @@ double _radius;
      * @param _radius
      */
     public RadialGeometry(double _radius) {
+        super(/*_emission*/);
         this._radius = _radius;
     }
+
+    /**
+     * Constructor with color and radius
+     * @param _emission
+     * @param _radius
+     */
+    public RadialGeometry(Color _emission, double _radius) {
+        super(_emission);
+        this._radius = _radius;
+    }
+
 
     /**
      * Constructor that receives other RadialGeometry

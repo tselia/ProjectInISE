@@ -61,11 +61,11 @@ public class SceneBuilder{
                             RGB[k]=0;
                         }
                     }
-                    currentScene.set_background(new Color(RGB[0], RGB[1], RGB[2]));
+                    currentScene.setBackground(new Color(RGB[0], RGB[1], RGB[2]));
                     String distance = scene.getAttribute("screen-distance");
                     try {
                        // double d = ;
-                        currentScene.set_distance(Double.parseDouble(distance));
+                        currentScene.setDistance(Double.parseDouble(distance));
                     }
                     catch (Exception ex){
                         throw ex;
@@ -86,7 +86,7 @@ public class SceneBuilder{
                                 Point3D vTO = getPointFromString(vTo);
                                 Point3D vUP = getPointFromString(vUp);
                                 Camera cam = new Camera(centralPoint, new Vector(vUP), new Vector(vTO));
-                                currentScene.set_camera(cam);
+                                currentScene.setCamera(cam);
                             }
                             if (el.getNodeName().contains("ambient")){
                                 Element ambient = (Element) el;
@@ -101,7 +101,7 @@ public class SceneBuilder{
                                         RGB[k]=0;
                                     }
                                 }
-                                currentScene.set_ambientLight(new AmbientLight(new java.awt.Color(RGB[0], RGB[1], RGB[2]), 1));
+                                currentScene.setAmbientLight(new AmbientLight(new java.awt.Color(RGB[0], RGB[1], RGB[2]), 1));
 
 
                             }

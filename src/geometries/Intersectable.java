@@ -9,9 +9,45 @@ import java.util.*;
  */
 public interface Intersectable {
     /**
+     * A class that connects the point to the geometry that to it's surface the point belongs
+     */
+    public static class GeoPoint {
+        public Geometry geometry;
+        public Point3D point;
+
+        /**
+         * Constructs a GeoPoint object by parameters
+         * @param geometry
+         * @param point
+         */
+        public GeoPoint(Geometry geometry, Point3D point) {
+            this.geometry = geometry;
+            this.point = point;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof GeoPoint)) return false;
+
+            GeoPoint geoPoint = (GeoPoint) o;
+
+
+            if (!Objects.equals(geometry, geoPoint.geometry)) return false;
+            return point.equals(geoPoint.point);
+        }
+
+    }
+    /**
      * The method of getting the intersection points with the ray
      * @param ray
      * @return
      */
-    List<Point3D> findIntersections(Ray ray);
+    List<GeoPoint> findIntersections(Ray ray);
+
+
+
+
+
+
 }

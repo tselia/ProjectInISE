@@ -9,7 +9,7 @@ import java.util.List;
  * Class plane is a basic representation of plane
  * Authors - Polina Frolov Korogodsky and Tselia Tebol
  */
-public class Plane implements Intersectable {
+public class Plane extends Geometry {
     Point3D point;
     Vector normal;
 
@@ -20,6 +20,18 @@ public class Plane implements Intersectable {
      * @param normal
      */
     public Plane(Point3D point, Vector normal) {
+        this.point = point;
+        this.normal = normal;
+    }
+
+    /**
+     * Constructor with color, point and vector
+     * @param _emission
+     * @param point
+     * @param normal
+     */
+    public Plane(Color _emission, Point3D point, Vector normal) {
+        super(_emission);
         this.point = point;
         this.normal = normal;
     }
@@ -44,8 +56,29 @@ public class Plane implements Intersectable {
             this.point = Point3D.zero;
         else this.point = A;
 
-    }
+}
 
+    /**
+     * Constructor with color and three points
+     * @param _emission
+     * @param A
+     * @param B
+     * @param C
+     */
+    public Plane(Color _emission, Point3D A, Point3D B, Point3D C) {
+        super(_emission);
+        Vector AB = new Vector(A.subtract(B));
+        Vector BC = new Vector(B.subtract(C));
+        try {
+            this.normal = AB.crossProduct(BC).normalized();// don't have any idea whether it works
+        } catch (ArithmeticException ex) {
+            throw ex;
+        }
+        if (A.equals(Point3D.zero) || B.equals(Point3D.zero) || C.equals(Point3D.zero))
+            this.point = Point3D.zero;
+        else this.point = A;
+
+    }
     /**
      * returns normal
      *
@@ -83,7 +116,7 @@ public class Plane implements Intersectable {
      * @return List(Point3D)
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findIntersections(Ray ray) {
         if (ray.getStart().equals(point))
             return null;
         if(ray.getDirection().dotProduct(normal)==0)//the ray is parallel to the plane
@@ -95,9 +128,9 @@ public class Plane implements Intersectable {
                 return null;
             //if()
             else {
-                List<Point3D> intersectionPoints = new ArrayList<Point3D>();
+                List<GeoPoint> intersectionPoints = new ArrayList<GeoPoint>();
                 //Point3D intersectionPoint = new Point3D(ray.getStart().add(ray.getDirection().scale(coefficient)));
-                intersectionPoints.add(ray.getPoint(coefficient));
+                intersectionPoints.add(new GeoPoint(this, ray.getPoint(coefficient)));
                 return intersectionPoints;
             }
         } else {
@@ -109,10 +142,10 @@ public class Plane implements Intersectable {
             if (coefficient <= 0)
                 return null;
             else {
-                List<Point3D> intersectionPoints = new ArrayList<Point3D>();
+                List<GeoPoint> intersectionPoints = new ArrayList<GeoPoint>();
                 //Point3D intersectionPoint = new Point3D(ray.getStart().add(ray.getDirection().scale(coefficient)));
                 try {
-                    intersectionPoints.add(ray.getPoint(coefficient));
+                    intersectionPoints.add(new GeoPoint(this, ray.getPoint(coefficient)));
                 }
                 catch(Exception ex){
                     throw new ExceptionInInitializerError("Error: coefficient is illegal");
@@ -121,5 +154,10 @@ public class Plane implements Intersectable {
             }
         }
 
+    }
+
+    @Override
+    public Vector getNormal(Point3D point) {
+        return normal;
     }
 }

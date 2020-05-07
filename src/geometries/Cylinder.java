@@ -26,6 +26,11 @@ public class Cylinder extends Tube{
         this.height = height;
     }
 
+    public Cylinder(Color _emission, double _radius, Ray axe, double height) {
+        super(_emission, _radius, axe);
+        this.height = height;
+    }
+
     /**
      * the Cylinder.getNormal(Point3D) function checks if the input Point is at the upper base (that differs it from tube) , checks
      * that the point is not higher then upper base and the if it's needed turns to the Tube's getNormal(Point3D) function
@@ -96,7 +101,7 @@ public class Cylinder extends Tube{
 
         return ((super.equals(o))&&(Double.compare(cylinder.getHeight(), getHeight()) == 0));
     }
-    private List<Point3D> getIntersectionPointsInStraightCoordinates(Cylinder cylinder, Ray ray){
+    private List<GeoPoint> getIntersectionPointsInStraightCoordinates(Cylinder cylinder, Ray ray){
         System.out.println(cylinder.toString());
         double a = Math.pow(ray.getDirection().getEnd().getY().get(), 2)+Math.pow(ray.getDirection().getEnd().getZ().get(), 2);
         double b = 2 * ((ray.getStart().getZ().get()-cylinder.getAxe().getStart().getZ().get())*ray.getDirection().getEnd().getZ().get() +
@@ -127,8 +132,8 @@ public class Cylinder extends Tube{
         if(intersectionPoint.getX().get()==maxHeight||intersectionPoint.getX().get()==minHeight)//the point on the angle
         {if(Math.pow(intersectionPoint.getZ().get(), 2)+Math.pow(intersectionPoint.getY().get(), 2)==Math.pow(cylinder._radius, 2))
             {return null;}}
-        List<Point3D> intersection = new ArrayList<Point3D>();
-        intersection.add(intersectionPoint);
+        List<GeoPoint> intersection = new ArrayList<GeoPoint>();
+        intersection.add(new GeoPoint(this, intersectionPoint));
         System.out.println("One intersection point "+ intersectionPoint.toString());
         return intersection;
     }
@@ -159,11 +164,11 @@ public class Cylinder extends Tube{
         }
         if(hasPoints||hasTi2)
         {
-            List<Point3D> intersection = new ArrayList<Point3D>();
+            List<GeoPoint> intersection = new ArrayList<GeoPoint>();
             if(hasPoints)
-                intersection.add(intersectionPoint1);
+                intersection.add(new GeoPoint(this, intersectionPoint1));
             if(hasTi2)
-                intersection.add(intersectionPoint2);
+                intersection.add(new GeoPoint(this, intersectionPoint2));
             for (int i=0; i<intersection.size(); i++)
                 System.out.println(intersection.get(i).toString());
             return intersection;
@@ -174,7 +179,7 @@ public class Cylinder extends Tube{
     }
 
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findIntersections(Ray ray) {
         if(this.getAxe().getDirection().equals(new Vector(1, 0, 0)))
             return getIntersectionPointsInStraightCoordinates(this, ray);
        // change coordinates to make the cylinder "straight" by x axis
@@ -242,21 +247,22 @@ public class Cylinder extends Tube{
         Vector dir = new Vector(newPointCoordinates[0][0],newPointCoordinates[1][0], newPointCoordinates[2][0]);
         //Constructing a new Ray
         Ray exactRay = new Ray(rayStartPointInNewCoordinates, dir);
-        List<Point3D> intersectionPoints = getIntersectionPointsInStraightCoordinates(new Cylinder(this._radius, new Ray(axeStartPointInNewCoordinates, newI), this.height), exactRay);
+        List<GeoPoint> intersectionPoints = getIntersectionPointsInStraightCoordinates(new Cylinder(this._radius, new Ray(axeStartPointInNewCoordinates, newI), this.height), exactRay);
         //needs return to the old coordinates
         if(intersectionPoints==null)
             return null;
-        List<Point3D> realIntersections = new ArrayList<Point3D>();
+        List<GeoPoint> realIntersections = new ArrayList<GeoPoint>();
         double [][] inverseMatrix = MathOperations.invert(transformationMatrix);
         int numOfPoints = intersectionPoints.size();
         for(int i=0; i<numOfPoints; i++)
         {
             //transforming point to the source coordinate system
-            startPoint[0][0] = intersectionPoints.get(i).getX().get();
-            startPoint[1][0] = intersectionPoints.get(i).getY().get();
-            startPoint[2][0] = intersectionPoints.get(i).getZ().get();
+            startPoint[0][0] = intersectionPoints.get(i).point.getX().get();
+            startPoint[1][0] = intersectionPoints.get(i).point.getY().get();
+            startPoint[2][0] = intersectionPoints.get(i).point.getZ().get();
             newPointCoordinates = MathOperations.multiplyMatrices(inverseMatrix, startPoint, 3, 3, 1);
-            realIntersections.add( new Point3D(newPointCoordinates[0][0],newPointCoordinates[1][0], newPointCoordinates[2][0]));
+            realIntersections.add( new GeoPoint(this,
+                    new Point3D(newPointCoordinates[0][0],newPointCoordinates[1][0], newPointCoordinates[2][0])));
 
         }
         return realIntersections;

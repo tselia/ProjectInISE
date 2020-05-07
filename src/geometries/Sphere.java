@@ -19,7 +19,17 @@ Point3D center;
      * @param _radius
      * @param center
      */
-    public Sphere(double _radius, Point3D center) {
+    public Sphere(Color _emission, double _radius, Point3D center) {
+        super(_emission, _radius);
+        this.center = center;
+    }
+
+    /**
+     * Constructor without Color parameter
+     * @param _radius
+     * @param center
+     */
+    public Sphere( double _radius, Point3D center) {
         super(_radius);
         this.center = center;
     }
@@ -68,7 +78,7 @@ Point3D center;
      * @return List(Point3D)
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findIntersections(Ray ray) {
         if(!ray.getStart().equals(center)) {
             Vector u = this.center.subtract(ray.getStart());
             double tmCoefficient = u.dotProduct(ray.getDirection());
@@ -87,17 +97,17 @@ Point3D center;
                 return null;
            // if (Util.alignZero(t2)==Util.alignZero(t1))
              //   if(ray.getStart().distance(center)>)
-            List<Point3D> intersectionPoints = new ArrayList<Point3D>();
+            List<GeoPoint> intersectionPoints = new ArrayList<GeoPoint>();
             if (Util.alignZero(t1) > 0)
-                intersectionPoints.add(ray.getPoint((t1)));
+                intersectionPoints.add(new GeoPoint(this, ray.getPoint((t1))));
             if (Util.alignZero(t2) > 0&&Util.alignZero(t2)!=Util.alignZero(t1)) {
-                intersectionPoints.add(ray.getPoint(t2));
+                intersectionPoints.add(new GeoPoint(this, ray.getPoint(t2)));
             }
             return intersectionPoints;
         }
         else {
-            List<Point3D> intersectionPoints = new ArrayList<Point3D>();
-            intersectionPoints.add(center.add(ray.getDirection().scale(_radius)));
+            List<GeoPoint> intersectionPoints = new ArrayList<GeoPoint>();
+            intersectionPoints.add(new GeoPoint(this, center.add(ray.getDirection().scale(_radius))));
             return intersectionPoints;
 
 

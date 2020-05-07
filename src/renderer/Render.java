@@ -7,6 +7,7 @@ import primitives.Point3D;
 import primitives.Ray;
 import scene.Scene;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,13 +30,22 @@ public class Render {
     }
 
     /**
+     * Constructor
+     * @param imageWriter
+     * @param scene
+     */
+    public Render(ImageWriter imageWriter, Scene scene) {
+        this.scene = scene;
+        this.imageWriter = imageWriter;
+    }
+    /**
      * The function that saves the 3D scene's 2D representation in matrix
      */
     public void renderImage() {
-        java.awt.Color background = scene.get_background().getColor();
-        Camera camera= scene.get_camera();
-        Intersectable geometries = scene.get_geometries();
-        double  distance = scene.get_distance();
+        java.awt.Color background = scene.getBackground().getColor();
+        Camera camera= scene.getCamera();
+        Intersectable geometries = scene.getGeometries();
+        double  distance = scene.getDistance();
         Ray ray;
         // number of pixels in the rows of the view plane
         int width = (int) imageWriter.getWidth();
@@ -50,12 +60,12 @@ public class Render {
         for (int row = 0; row < Ny; row++) {
             for (int column = 0; column < Nx; column++) {
                 ray = camera.constructRayThroughPixel(Nx, Ny, row, column, distance, width, height);
-                List<Point3D> intersectionPoints = scene.get_geometries().findIntersections(ray);
+                List<Intersectable.GeoPoint> intersectionPoints = scene.getGeometries().findIntersections(ray);
                 if (intersectionPoints == null) {
                     imageWriter.writePixel(column, row, background);
                 }
                 else {
-                    Point3D closestPoint = getClosestPoint(intersectionPoints);
+                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
                     imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint).getColor());
                 }
             }
@@ -67,8 +77,10 @@ public class Render {
      * @param p
      * @return
      */
-    public Color calcColor(Point3D p) {
-        return scene.get_ambientLight().get_intensity();
+    public Color calcColor(Intersectable.GeoPoint p) {
+        Color color = scene.getAmbientLight().get_intensity();
+        return color.add(p.geometry.getEmission()); //refactoring with colors' implementation
+        //return
     }
 
     /**
@@ -77,14 +89,14 @@ public class Render {
      * @param points
      * @return
      */
-    public Point3D getClosestPoint(List<Point3D> points) {
-        Point3D closest = null;
+    public Intersectable.GeoPoint getClosestPoint(List<Intersectable.GeoPoint> points) {
+        Intersectable.GeoPoint closest = null;
         double t = Double.MAX_VALUE;
 
-        Point3D p0 = this.scene.get_camera().getP0();
+        Point3D p0 = this.scene.getCamera().getP0();
 
-        for (Point3D p: points ) {
-            double dist = p0.distance(p);
+        for (Intersectable.GeoPoint p: points ) {
+            double dist = p0.distance(p.point);
             if (dist < t){
                 t= dist;
                 closest =p;
