@@ -78,7 +78,7 @@ public class Render {
      * @return
      */
     public Color calcColor(Intersectable.GeoPoint p) {
-        Color color = scene.getAmbientLight().get_intensity();
+        Color color = scene.getAmbientLight().getIntensity();
         return color.add(p.geometry.getEmission()); //refactoring with colors' implementation
         //return
     }

@@ -62,12 +62,12 @@ class SceneBuilderTest {
     void gettingAmbient(){
         SceneBuilder builder = new SceneBuilder();
         List<Scene> scenes = builder.build("basicRenderTestTwoColors.xml");
-       assertEquals(scenes.get(0).getAmbientLight().get_intensity().getColor().getBlue(),
-             new AmbientLight(new java.awt.Color(255, 191, 191), 1).get_intensity().getColor().getBlue());
-        assertEquals(scenes.get(0).getAmbientLight().get_intensity().getColor().getGreen(),
-                new AmbientLight(new java.awt.Color(255, 191, 191), 1).get_intensity().getColor().getGreen());
-        assertEquals(scenes.get(0).getAmbientLight().get_intensity().getColor().getRed(),
-                new AmbientLight(new java.awt.Color(255, 191, 191), 1).get_intensity().getColor().getRed());
+       assertEquals(scenes.get(0).getAmbientLight().getIntensity().getColor().getBlue(),
+             new AmbientLight(new java.awt.Color(255, 191, 191), 1).getIntensity().getColor().getBlue());
+        assertEquals(scenes.get(0).getAmbientLight().getIntensity().getColor().getGreen(),
+                new AmbientLight(new java.awt.Color(255, 191, 191), 1).getIntensity().getColor().getGreen());
+        assertEquals(scenes.get(0).getAmbientLight().getIntensity().getColor().getRed(),
+                new AmbientLight(new java.awt.Color(255, 191, 191), 1).getIntensity().getColor().getRed());
     }
 
     /**
