@@ -1,9 +1,6 @@
 package geometries;
 
-import primitives.Color;
-import primitives.Point3D;
-import primitives.Ray;
-import primitives.Vector;
+import primitives.*;
 /**
  * Class Triangle is a basic representation of triangle geometry as a son class of polygon
  * Authors - Polina Frolov Korogodsky and Tselia Tebol
@@ -12,15 +9,26 @@ import java.util.List;
 
 public class Triangle extends Polygon {
     /**
-     * Constructor receives 3 points  and adds them to the list
+     * Constructor receives 3 points, Color and Material
+     * @param _emission
+     * @param mat
+     * @param A
+     * @param B
+     * @param C
+     */
+    public Triangle(Color _emission, Material mat, Point3D A, Point3D B, Point3D C) {
+        super(_emission, mat, A, B, C);
+    }
+
+    /**
+     * Constructor without color and material
      * @param A
      * @param B
      * @param C
      */
     public Triangle(Point3D A, Point3D B, Point3D C) {
-        super(A, B, C);
+        super( A, B, C);
     }
-
     /**
      * Constructor with Color parameter
      * @param _emission

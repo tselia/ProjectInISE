@@ -16,16 +16,33 @@ public class Cylinder extends Tube{
     //double radius
 
     /**
-     * Constructs a cylinder by radius and height
+     * Constructs a cylinder by radius, axe, height, emission color and material
      *
      * @param _radius
+     * @param height
+     */
+    public Cylinder(Color _emission, Material _mat, double _radius, Ray axe, double height) {
+        super(_emission, _mat, _radius, axe);
+        this.height = height;
+    }
+
+    /**
+     * Constructor without color and material
+     * @param _radius
+     * @param axe
      * @param height
      */
     public Cylinder(double _radius, Ray axe, double height) {
         super(_radius, axe);
         this.height = height;
     }
-
+    /**
+     * Constructs new cylinder by color, radius, axis and height
+     * @param _emission
+     * @param _radius
+     * @param axe
+     * @param height
+     */
     public Cylinder(Color _emission, double _radius, Ray axe, double height) {
         super(_emission, _radius, axe);
         this.height = height;
@@ -81,7 +98,6 @@ public class Cylinder extends Tube{
                 "height=" + height +
                 " " + super.toString() + "} ";
     }
-
 
 
 

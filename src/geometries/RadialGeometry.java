@@ -10,11 +10,11 @@ public abstract class RadialGeometry extends Geometry {
 double _radius;
 
     /**
-     *constructor that receives double for radius
+     *constructor that receives double for radius, color and material
      * @param _radius
      */
-    public RadialGeometry(double _radius) {
-        super(/*_emission*/);
+    public RadialGeometry(Color _emission, Material mat, double _radius) {
+        super(_emission, mat);
         this._radius = _radius;
     }
 
@@ -25,6 +25,15 @@ double _radius;
      */
     public RadialGeometry(Color _emission, double _radius) {
         super(_emission);
+        this._radius = _radius;
+    }
+
+    /**
+     * constructor without emission color and material
+     * @param _radius
+     */
+    public RadialGeometry(double _radius) {
+       //super(_emission);
         this._radius = _radius;
     }
 

@@ -13,17 +13,23 @@ public class Plane extends Geometry {
     Point3D point;
     Vector normal;
 
-    /**
-     * Constructor with point and vector
-     *
-     * @param point
-     * @param normal
-     */
-    public Plane(Point3D point, Vector normal) {
+//    /**
+//     * Constructor with point and vector
+//     *
+//     * @param point
+//     * @param normal
+//     */
+//    public Plane(Point3D point, Vector normal) {
+//        this.point = point;
+//        this.normal = normal;
+//    }
+
+
+    public Plane(Color _emission, Material _mat, Point3D point, Vector normal) {
+        super(_emission, _mat);
         this.point = point;
         this.normal = normal;
     }
-
     /**
      * Constructor with color, point and vector
      * @param _emission
@@ -36,6 +42,17 @@ public class Plane extends Geometry {
         this.normal = normal;
     }
 
+
+    /**
+     * Constructor with point and vector
+     * @param point
+     * @param normal
+     */
+    public Plane(Point3D point, Vector normal) {
+        //super(Color.BLACK);
+        this.point = point;
+        this.normal = normal;
+    }
     /**
      * finds a normal and defines a plane by normal and point
      *
@@ -79,6 +96,29 @@ public class Plane extends Geometry {
         else this.point = A;
 
     }
+
+    /**
+     * Constructs the plane by it's color, material and 3 points
+     * @param _emission
+     * @param _material
+     * @param A
+     * @param B
+     * @param C
+     */
+    public Plane(Color _emission, Material _material, Point3D A, Point3D B, Point3D C) {
+        super(_emission, _material);
+        Vector AB = new Vector(A.subtract(B));
+        Vector BC = new Vector(B.subtract(C));
+        try {
+            this.normal = AB.crossProduct(BC).normalized();// don't have any idea whether it works
+        } catch (ArithmeticException ex) {
+            throw ex;
+        }
+        if (A.equals(Point3D.zero) || B.equals(Point3D.zero) || C.equals(Point3D.zero))
+            this.point = Point3D.zero;
+        else this.point = A;
+    }
+
     /**
      * returns normal
      *

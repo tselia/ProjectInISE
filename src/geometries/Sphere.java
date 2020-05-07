@@ -25,12 +25,24 @@ Point3D center;
     }
 
     /**
-     * Constructor without Color parameter
+     * Constructor without color and material
      * @param _radius
      * @param center
      */
-    public Sphere( double _radius, Point3D center) {
+    public Sphere(double _radius, Point3D center) {
         super(_radius);
+        this.center = center;
+    }
+
+    /**
+     * Constructor with Color and Material parameters
+     * @param _emission
+     * @param _mat
+     * @param _radius
+     * @param center
+     */
+    public Sphere( Color _emission, Material _mat, double _radius, Point3D center) {
+        super(_emission, _mat, _radius);
         this.center = center;
     }
 

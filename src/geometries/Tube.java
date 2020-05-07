@@ -12,13 +12,13 @@ public class Tube extends RadialGeometry {
     Ray axe;
 
     /**
-     * Constructs a ray by radius and axe ray
+     * Constructs a ray by radius, axe ray, emission color and material
      *
      * @param _radius
      * @param axe
      */
-    public Tube(double _radius, Ray axe) {
-        super(_radius);
+    public Tube(Color _emission, Material _mat, double _radius, Ray axe) {
+        super(_emission, _mat, _radius);
         try{this.axe = axe;}
         catch (Exception ex)// if Ray's constructor has thrown exception <- if vector was null vector
         {
@@ -34,6 +34,20 @@ public class Tube extends RadialGeometry {
      */
     public Tube(Color _emission, double _radius, Ray axe) {
         super(_emission, _radius);
+        try{this.axe = axe;}
+        catch (Exception ex)// if Ray's constructor has thrown exception <- if vector was null vector
+        {
+            throw ex;
+        }
+    }
+
+    /**
+     * Constructor without color and material
+     * @param _radius
+     * @param axe
+     */
+    public Tube(double _radius, Ray axe) {
+        super(_radius);
         try{this.axe = axe;}
         catch (Exception ex)// if Ray's constructor has thrown exception <- if vector was null vector
         {
