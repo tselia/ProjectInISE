@@ -29,7 +29,7 @@ public class DirectionalLight extends Light implements LightSource {
     @Override
     public Color getIntensity(Point3D point) {
         return _intensity;
-    }
+    }//is quicker then calling for super's function
 
     /**
      * overridden function that should return the direction of light in specific point. for directional light

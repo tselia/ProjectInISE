@@ -22,6 +22,6 @@ abstract class Light {
      * @return
      */
     public Color getIntensity() {
-        return _intensity;
+        return new Color(_intensity);
     }
 }

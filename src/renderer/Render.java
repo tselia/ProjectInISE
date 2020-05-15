@@ -1,14 +1,15 @@
 package renderer;
 
 import elements.Camera;
+import elements.LightSource;
 import geometries.Intersectable;
-import primitives.Color;
-import primitives.Point3D;
-import primitives.Ray;
+import primitives.*;
 import scene.Scene;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static primitives.Util.alignZero;
 
 /**
  * The Render class is a union of Scene and ImageWriter so that the specific scene could be printed  as picture
@@ -59,7 +60,7 @@ public class Render {
 
         for (int row = 0; row < Ny; row++) {
             for (int column = 0; column < Nx; column++) {
-                ray = camera.constructRayThroughPixel(Nx, Ny, row, column, distance, width, height);
+                ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
                 List<Intersectable.GeoPoint> intersectionPoints = scene.getGeometries().findIntersections(ray);
                 if (intersectionPoints == null) {
                     imageWriter.writePixel(column, row, background);
@@ -74,13 +75,35 @@ public class Render {
 
     /**
      * function that should calculate the color of specific point
-     * @param p
+     * @param intersection
      * @return
      */
-    public Color calcColor(Intersectable.GeoPoint p) {
+
+
+    private Color calcColor(Intersectable.GeoPoint intersection) {
         Color color = scene.getAmbientLight().getIntensity();
-        return color.add(p.geometry.getEmission()); //refactoring with colors' implementation
-        //return
+        color = color.add(intersection.geometry.getEmission());
+        Vector v = intersection.point.subtract(scene.getCamera().getP0()).normalize();
+        Vector n = intersection.geometry.getNormal(intersection.point);
+        Material material = intersection.geometry.getMaterial();
+        int nShininess = material.getNShininess();
+        double kd = material.getKD();
+        double ks = material.getKS();
+        if (scene.getLights() != null) {
+
+            List<LightSource> lightSources = scene.getLights();
+            for (LightSource lightSource : lightSources) {
+                Vector l = lightSource.getL(intersection.point);
+                //double angleN = alignZero(n.dotProduct(l));
+                //double angleV = alignZero(v.dotProduct(l));
+                if (sign(alignZero(n.dotProduct(l))) == sign(alignZero(n.dotProduct(v)))) {
+                    Color lightIntensity = lightSource.getIntensity(intersection.point);
+                    color = color.add(calcDiffusive(kd, l, n, lightIntensity),
+                            calcSpecular(ks, l, n, v, nShininess, lightIntensity));
+                }
+            }
+        }
+        return color;
     }
 
     /**
@@ -89,7 +112,7 @@ public class Render {
      * @param points
      * @return
      */
-    public Intersectable.GeoPoint getClosestPoint(List<Intersectable.GeoPoint> points) {
+    public Intersectable.GeoPoint getClosestPoint(List< Intersectable.GeoPoint > points) {
         Intersectable.GeoPoint closest = null;
         double t = Double.MAX_VALUE;
 
@@ -129,4 +152,54 @@ public class Render {
     public void writeToImage() {
         imageWriter.writeToImage();
     }
+
+    /**
+     * function that calculate the diffuse composant of the light reflection
+     * @param kd
+     * @param n
+     * @param lightIntensity
+     * @return
+     */
+    private Color calcDiffusive(double kd, Vector l ,Vector n, Color lightIntensity) {
+        double nl = alignZero(n.dotProduct(l));
+        if (nl < 0) { nl = -nl; }
+        return lightIntensity.scale(nl * kd);
+    }
+
+
+    /**
+     * function that calculate the specular composant of the light reflection
+     * @param ks
+     * @param l
+     * @param n
+     * @param v
+     * @param nShininess
+     * @param lightIntensity
+     * @return
+     */
+    private Color calcSpecular(double ks, Vector l, Vector n, Vector v, int nShininess, Color lightIntensity) {
+        try {
+            double nl = alignZero(n.dotProduct(l));
+            double sh = nShininess;
+
+            Vector R = l.add(n.scale(-2 * nl));
+
+            double minusVR = -alignZero(R.dotProduct(v));
+            if (minusVR <= 0) {     // if view in opposite direction
+                return Color.BLACK;
+            }
+            return lightIntensity.scale(ks * Math.pow(minusVR, sh));
+        }
+        catch (Exception ex){throw ex;}// if nl=0
+    }
+
+    /**
+     * function that verifies the sign of value
+     * @param val
+     * @return
+     */
+    private boolean sign(double val) {
+        return (val > 0d);
+    }
 }
+

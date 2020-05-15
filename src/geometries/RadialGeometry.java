@@ -33,16 +33,18 @@ double _radius;
      * @param _radius
      */
     public RadialGeometry(double _radius) {
-       //super(_emission);
+       super(Color.BLACK);
         this._radius = _radius;
     }
 
 
     /**
      * Constructor that receives other RadialGeometry
+     * and constructs the one with same radius, emission and material
      * @param geometry
      */
     public RadialGeometry(RadialGeometry geometry){
+        super(geometry._emission, geometry._material);
         this._radius = geometry._radius;
     }
 

@@ -23,7 +23,7 @@ public class RenderTest {
     @Test
     public void basicRenderTwoColorTest() {
         Scene scene = new Scene("Test scene");
-        scene.setCamera(new Camera(Point3D.zero, new Vector(0, 0, 1), new Vector(0, -1, 0)));
+        scene.setCamera(new Camera(Point3D.zero, new Vector(0, -1, 0), new Vector(0, 0, 1)));
         scene.setDistance(100);
         scene.setBackground(new Color(75, 127, 90));
         scene.setAmbientLight(new AmbientLight(new Color(255, 191, 191), 1));
@@ -47,15 +47,15 @@ public class RenderTest {
     @Test
     public void basicRenderMultiColorTest() {
         Scene scene = new Scene("Test scene");
-        scene.setCamera(new Camera(Point3D.zero, new Vector(0, 0, 1), new Vector(0, -1, 0)));
+        scene.setCamera(new Camera(Point3D.zero,  new Vector(0, -1, 0), new Vector(0, 0, 1)));
         scene.setDistance(100);
         scene.setBackground(Color.BLACK);
         scene.setAmbientLight(new AmbientLight(new Color(java.awt.Color.WHITE), 0.2));
 
         scene.addGeometries(new Sphere(50, new Point3D(0, 0, 100)));
-
+        scene.addLights(new PointLight(new Color(255, 153, 51), new Point3D(-5, 98, 95), 0.1, 0.05, 0.05));
         scene.addGeometries(
-                new Triangle(new Color(java.awt.Color.BLUE),
+                new Triangle(new Color(java.awt.Color.BLUE), new Material(0.5, 0.5, 3),
                         new Point3D(100, 0, 100), new Point3D(0, 100, 100), new Point3D(100, 100, 100)),      // lower right
                 new Triangle(
                         new Point3D(100, 0, 100), new Point3D(0, -100, 100), new Point3D(100, -100, 100)),    // upper right
@@ -64,7 +64,7 @@ public class RenderTest {
                 new Triangle(new Color(java.awt.Color.GREEN),
                         new Point3D(-100, 0, 100), new Point3D(0, -100, 100), new Point3D(-100, -100, 100))); // upper left
 
-        ImageWriter imageWriter = new ImageWriter("color render test", 500, 500, 500, 500);
+        ImageWriter imageWriter = new ImageWriter("color render test + point", 500, 500, 500, 500);
         Render render = new Render(imageWriter, scene);
 
         render.renderImage();

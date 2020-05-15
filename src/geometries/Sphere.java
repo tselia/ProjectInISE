@@ -54,14 +54,19 @@ Point3D center;
      */
     @Override
     public Vector getNormal(Point3D point) {
-        try {
+       /* try {
             if ((point.subtract(this.center)).length() != this._radius)
                 throw new IllegalArgumentException("The point is not on the sphere's surface");
         }
         catch (IllegalArgumentException ex){
             throw ex;
-        }
-        return (point.subtract(this.center)).normalize();
+        }*/
+       try {
+           return (point.subtract(this.center)).normalize();
+       }
+       catch (IllegalArgumentException ex) {
+           throw ex;
+       }
 
     }
 

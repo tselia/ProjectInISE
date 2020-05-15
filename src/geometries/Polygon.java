@@ -105,7 +105,7 @@ public class Polygon extends Geometry {
      *                                  </ul>
      */
     public Polygon(Color _emission, Material mat,  Point3D... vertices) {
-        //super(_emission, mat);
+        super(_emission, mat);
         if (vertices.length < 3)
             throw new IllegalArgumentException("A polygon can't have less than 3 vertices");
         _vertices = List.of(vertices);
@@ -165,7 +165,7 @@ public class Polygon extends Geometry {
      *                                  </ul>
      */
     public Polygon( Point3D... vertices) {
-        super();
+        super(Color.BLACK);
         if (vertices.length < 3)
             throw new IllegalArgumentException("A polygon can't have less than 3 vertices");
         _vertices = List.of(vertices);

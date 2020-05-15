@@ -49,7 +49,7 @@ public class Plane extends Geometry {
      * @param normal
      */
     public Plane(Point3D point, Vector normal) {
-        //super(Color.BLACK);
+        super(Color.BLACK);
         this.point = point;
         this.normal = normal;
     }
@@ -65,7 +65,7 @@ public class Plane extends Geometry {
         Vector AB = new Vector(A.subtract(B));
         Vector BC = new Vector(B.subtract(C));
         try {
-            this.normal = AB.crossProduct(BC).normalized();// don't have any idea whether it works
+            this.normal = AB.crossProduct(BC).normalized();
         } catch (ArithmeticException ex) {
             throw ex;
         }
