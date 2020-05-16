@@ -24,8 +24,9 @@ double _radius;
      * @param _radius
      */
     public RadialGeometry(Color _emission, double _radius) {
-        super(_emission);
-        this._radius = _radius;
+        /*super(_emission);
+        this._radius = _radius;*/
+        this(_emission, new Material(0, 0,0), _radius);
     }
 
     /**
@@ -33,8 +34,9 @@ double _radius;
      * @param _radius
      */
     public RadialGeometry(double _radius) {
-       super(Color.BLACK);
-        this._radius = _radius;
+       /*super(Color.BLACK);
+        this._radius = _radius;*/
+       this(Color.BLACK, new Material(0, 0,0), _radius);
     }
 
 
@@ -44,8 +46,9 @@ double _radius;
      * @param geometry
      */
     public RadialGeometry(RadialGeometry geometry){
-        super(geometry._emission, geometry._material);
-        this._radius = geometry._radius;
+        /*super(geometry._emission, geometry._material);
+        this._radius = geometry._radius;*/
+        this(geometry._emission, geometry._material, geometry._radius);
     }
 
     /**

@@ -3,6 +3,7 @@ package geometries;
 import primitives.*;
 import primitives.Vector;
 
+import java.awt.color.ICC_ColorSpace;
 import java.util.*;
 import java.lang.*;
 
@@ -20,8 +21,9 @@ Point3D center;
      * @param center
      */
     public Sphere(Color _emission, double _radius, Point3D center) {
-        super(_emission, _radius);
-        this.center = center;
+        /*super(_emission, _radius);
+        this.center = center;*/
+        this(_emission, new Material(0, 0, 0), _radius, center);
     }
 
     /**
@@ -30,8 +32,9 @@ Point3D center;
      * @param center
      */
     public Sphere(double _radius, Point3D center) {
-        super(_radius);
-        this.center = center;
+        /*super(_radius);
+        this.center = center;*/
+        this(Color.BLACK, new Material(0, 0, 0), _radius, center);
     }
 
     /**

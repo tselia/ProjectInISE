@@ -33,8 +33,9 @@ public class Cylinder extends Tube{
      * @param height
      */
     public Cylinder(double _radius, Ray axe, double height) {
-        super(_radius, axe);
-        this.height = height;
+       /* super(_radius, axe);
+        this.height = height;*/
+       this(Color.BLACK,_radius, axe, height);
     }
     /**
      * Constructs new cylinder by color, radius, axis and height
@@ -44,8 +45,9 @@ public class Cylinder extends Tube{
      * @param height
      */
     public Cylinder(Color _emission, double _radius, Ray axe, double height) {
-        super(_emission, _radius, axe);
-        this.height = height;
+        /*super(_emission, _radius, axe);
+        this.height = height;*/
+        this(_emission, new Material(0, 0,0), _radius, axe, height);
     }
 
     /**

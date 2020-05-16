@@ -13,16 +13,6 @@ public class Plane extends Geometry {
     Point3D point;
     Vector normal;
 
-//    /**
-//     * Constructor with point and vector
-//     *
-//     * @param point
-//     * @param normal
-//     */
-//    public Plane(Point3D point, Vector normal) {
-//        this.point = point;
-//        this.normal = normal;
-//    }
 
 
     public Plane(Color _emission, Material _mat, Point3D point, Vector normal) {
@@ -37,9 +27,7 @@ public class Plane extends Geometry {
      * @param normal
      */
     public Plane(Color _emission, Point3D point, Vector normal) {
-        super(_emission);
-        this.point = point;
-        this.normal = normal;
+        this(_emission, new Material(0, 0, 0), point, normal);
     }
 
 
@@ -49,7 +37,8 @@ public class Plane extends Geometry {
      * @param normal
      */
     public Plane(Point3D point, Vector normal) {
-        super(Color.BLACK);
+        //super(Color.BLACK);
+        this(Color.BLACK, point, normal);
         this.point = point;
         this.normal = normal;
     }
@@ -62,7 +51,7 @@ public class Plane extends Geometry {
      * @throws ArithmeticException
      */
     public Plane(Point3D A, Point3D B, Point3D C) {
-        Vector AB = new Vector(A.subtract(B));
+       /* Vector AB = new Vector(A.subtract(B));
         Vector BC = new Vector(B.subtract(C));
         try {
             this.normal = AB.crossProduct(BC).normalized();
@@ -71,7 +60,12 @@ public class Plane extends Geometry {
         }
         if (A.equals(Point3D.zero) || B.equals(Point3D.zero) || C.equals(Point3D.zero))
             this.point = Point3D.zero;
-        else this.point = A;
+        else this.point = A;*/
+
+           this(Color.BLACK, new Material(0, 0, 0), A, B, C);
+
+       //catch (ArithmeticException ex){throw ex;}
+
 
 }
 
@@ -83,7 +77,7 @@ public class Plane extends Geometry {
      * @param C
      */
     public Plane(Color _emission, Point3D A, Point3D B, Point3D C) {
-        super(_emission);
+        /*super(_emission);
         Vector AB = new Vector(A.subtract(B));
         Vector BC = new Vector(B.subtract(C));
         try {
@@ -93,7 +87,8 @@ public class Plane extends Geometry {
         }
         if (A.equals(Point3D.zero) || B.equals(Point3D.zero) || C.equals(Point3D.zero))
             this.point = Point3D.zero;
-        else this.point = A;
+        else this.point = A;*/
+        this(_emission, new Material(0, 0, 0), A, B, C);
 
     }
 

@@ -43,7 +43,8 @@ public class Polygon extends Geometry {
      *                                  </ul>
      */
     public Polygon(Color _emission, Point3D... vertices) {
-        super(_emission);
+        this(_emission, new Material(0, 0,0 ), vertices);
+        /*super(_emission);
         if (vertices.length < 3)
             throw new IllegalArgumentException("A polygon can't have less than 3 vertices");
         _vertices = List.of(vertices);
@@ -79,7 +80,7 @@ public class Polygon extends Geometry {
             edge2 = vertices[i].subtract(vertices[i - 1]);
             if (positive != (edge1.crossProduct(edge2).dotProduct(n) > 0))
                 throw new IllegalArgumentException("All vertices must be ordered and the polygon must be convex");
-        }
+        }*/
     }
 
 
@@ -165,7 +166,8 @@ public class Polygon extends Geometry {
      *                                  </ul>
      */
     public Polygon( Point3D... vertices) {
-        super(Color.BLACK);
+        this(Color.BLACK, new Material(0, 0, 0), vertices);
+        /*super(Color.BLACK);
         if (vertices.length < 3)
             throw new IllegalArgumentException("A polygon can't have less than 3 vertices");
         _vertices = List.of(vertices);
@@ -201,7 +203,7 @@ public class Polygon extends Geometry {
             edge2 = vertices[i].subtract(vertices[i - 1]);
             if (positive != (edge1.crossProduct(edge2).dotProduct(n) > 0))
                 throw new IllegalArgumentException("All vertices must be ordered and the polygon must be convex");
-        }
+        }*/
     }
 
     /**
