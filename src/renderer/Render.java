@@ -19,6 +19,7 @@ import static primitives.Util.alignZero;
 public class Render {
     private Scene scene;
     private  ImageWriter imageWriter ;
+    private static final double DELTA = 0.1;
 
     /**
      *Constructor
@@ -82,10 +83,10 @@ public class Render {
 
     private Color calcColor(Intersectable.GeoPoint intersection) {
         Color color = scene.getAmbientLight().getIntensity();
-        color = color.add(intersection.geometry.getEmission());
-        Vector v = intersection.point.subtract(scene.getCamera().getP0()).normalize();
-        Vector n = intersection.geometry.getNormal(intersection.point);
-        Material material = intersection.geometry.getMaterial();
+        color = color.add(intersection.getGeometry().getEmission());
+        Vector v = intersection.getPoint().subtract(scene.getCamera().getP0()).normalize();
+        Vector n = intersection.getGeometry().getNormal(intersection.getPoint());
+        Material material = intersection.getGeometry().getMaterial();
         int nShininess = material.getNShininess();
         double kd = material.getKD();
         double ks = material.getKS();
@@ -93,16 +94,17 @@ public class Render {
 
             List<LightSource> lightSources = scene.getLights();
             for (LightSource lightSource : lightSources) {
-                Vector l = lightSource.getL(intersection.point);
-                //double angleN = alignZero(n.dotProduct(l));
-                //double angleV = alignZero(v.dotProduct(l));
+                Vector l = lightSource.getL(intersection.getPoint());
                 if (sign(alignZero(n.dotProduct(l))) == sign(alignZero(n.dotProduct(v)))) {
-                    Color lightIntensity = lightSource.getIntensity(intersection.point);
-                    color = color.add(calcDiffusive(kd, l, n, lightIntensity),
-                            calcSpecular(ks, l, n, v, nShininess, lightIntensity));
+                    if (unshaded(l, n, intersection)) {
+                        Color lightIntensity = lightSource.getIntensity(intersection.getPoint());
+                        color = color.add(calcDiffusive(kd, l, n, lightIntensity),
+                                calcSpecular(ks, l, n, v, nShininess, lightIntensity));
+                    }
                 }
             }
         }
+
         return color;
     }
 
@@ -119,7 +121,7 @@ public class Render {
         Point3D p0 = this.scene.getCamera().getP0();
 
         for (Intersectable.GeoPoint p: points ) {
-            double dist = p0.distance(p.point);
+            double dist = p0.distance(p.getPoint());
             if (dist < t){
                 t= dist;
                 closest =p;
@@ -200,6 +202,24 @@ public class Render {
      */
     private boolean sign(double val) {
         return (val > 0d);
+    }
+
+    /**
+     * Function that checks whether an object is shadowed or not.
+     * It constructs the ray from the intersection point to the light source and if it has no intersections with other
+     * geometries, it returns true, otherwise false
+     * @param l
+     * @param n
+     * @param gp
+     * @return
+     */
+    private boolean unshaded(Vector l, Vector n, Intersectable.GeoPoint gp){
+        Vector pointToLight = l.scale(-1);
+        Vector delta = n.scale(Util.alignZero(pointToLight.dotProduct(n))>0? DELTA:-DELTA);
+        Point3D point = gp.getPoint().add(delta);
+        Ray toLight = new Ray(point, pointToLight);
+        List<Intersectable.GeoPoint> intersections = this.scene.getGeometries().findIntersections(toLight);
+        return  intersections==null;
     }
 }
 

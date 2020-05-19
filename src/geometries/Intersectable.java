@@ -11,9 +11,9 @@ public interface Intersectable {
     /**
      * A class that connects the point to the geometry that to it's surface the point belongs
      */
-    public static class GeoPoint {
-        public Geometry geometry;
-        public Point3D point;
+    static class GeoPoint {//there is an access problem
+        protected final Geometry geometry;
+        protected final Point3D point;
 
         /**
          * Constructs a GeoPoint object by parameters
@@ -37,6 +37,13 @@ public interface Intersectable {
             return point.equals(geoPoint.point);
         }
 
+        public Geometry getGeometry() {
+            return geometry;
+        }
+
+        public Point3D getPoint() {
+            return point;
+        }
     }
     /**
      * The method of getting the intersection points with the ray
