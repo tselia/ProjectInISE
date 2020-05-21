@@ -68,10 +68,6 @@ public class SpotLight extends PointLight implements LightSource {
             coefficient = Math.pow(coefficient, _concentration);
         }
         return colorOfPointInSuper.scale(coefficient);
-//        if(cos>0)
-//            return super.getIntensity(point).scale(cos);
-//        else return Color.BLACK;
-
     }
 
 }

@@ -59,9 +59,6 @@ public class Geometries implements Intersectable {
                 }
             }
         }
-       // if(intersections.isEmpty())
-         //   System.out.println("isEmpty");
-        //else System.out.println(intersections.size());
         if (intersections.isEmpty())
             return null;
         else return intersections;

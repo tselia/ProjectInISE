@@ -96,7 +96,7 @@ public class Render {
             for (LightSource lightSource : lightSources) {
                 Vector l = lightSource.getL(intersection.getPoint());
                 if (sign(alignZero(n.dotProduct(l))) == sign(alignZero(n.dotProduct(v)))) {
-                    if (unshaded(l, n, intersection)) {
+                    if (unshaded(l, n, intersection, lightSource)) {
                         Color lightIntensity = lightSource.getIntensity(intersection.getPoint());
                         color = color.add(calcDiffusive(kd, l, n, lightIntensity),
                                 calcSpecular(ks, l, n, v, nShininess, lightIntensity));
@@ -211,15 +211,27 @@ public class Render {
      * @param l
      * @param n
      * @param gp
+     * @param light
      * @return
      */
-    private boolean unshaded(Vector l, Vector n, Intersectable.GeoPoint gp){
+    private boolean unshaded(Vector l, Vector n, Intersectable.GeoPoint gp, LightSource light){
         Vector pointToLight = l.scale(-1);
         Vector delta = n.scale(Util.alignZero(pointToLight.dotProduct(n))>0? DELTA:-DELTA);
         Point3D point = gp.getPoint().add(delta);
         Ray toLight = new Ray(point, pointToLight);
         List<Intersectable.GeoPoint> intersections = this.scene.getGeometries().findIntersections(toLight);
-        return  intersections==null;
+        if(intersections!=null){
+            double dist = light.getDistance(gp.getPoint());
+
+            List<Intersectable.GeoPoint> nonFarIntersection = new ArrayList<>();
+            for(Intersectable.GeoPoint intersection: intersections)
+            if(light.getDistance(intersection.getPoint())<dist)
+                nonFarIntersection.add(intersection);
+
+            return nonFarIntersection==null;
+        }
+        return true;
+
     }
 }
 

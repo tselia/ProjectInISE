@@ -62,12 +62,12 @@ public class Plane extends Geometry {
             this.point = Point3D.zero;
         else this.point = A;*/
 
-           this(Color.BLACK, new Material(0, 0, 0), A, B, C);
+        this(Color.BLACK, new Material(0, 0, 0), A, B, C);
 
-       //catch (ArithmeticException ex){throw ex;}
+        //catch (ArithmeticException ex){throw ex;}
 
 
-}
+    }
 
     /**
      * Constructor with color and three points
@@ -161,7 +161,7 @@ public class Plane extends Geometry {
             double coefficient = normal.dotProduct(point.subtract(ray.getStart())) / n;
             if (coefficient <= 0)
                 return null;
-            //if()
+                //if()
             else {
                 List<GeoPoint> intersectionPoints = new ArrayList<GeoPoint>();
                 //Point3D intersectionPoint = new Point3D(ray.getStart().add(ray.getDirection().scale(coefficient)));

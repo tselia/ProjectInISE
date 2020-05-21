@@ -53,8 +53,4 @@ public interface Intersectable {
     List<GeoPoint> findIntersections(Ray ray);
 
 
-
-
-
-
 }

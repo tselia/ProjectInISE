@@ -13,7 +13,7 @@ import java.lang.*;
  * Authors : Polina Frolov Korogodsky and Tselia Tebol
  */
 public class Sphere extends RadialGeometry{
-Point3D center;
+    Point3D center;
 
     /**
      * Constructor receiving radius and center point
@@ -64,12 +64,12 @@ Point3D center;
         catch (IllegalArgumentException ex){
             throw ex;
         }*/
-       try {
-           return (point.subtract(this.center)).normalize();
-       }
-       catch (IllegalArgumentException ex) {
-           throw ex;
-       }
+        try {
+            return (point.subtract(this.center)).normalize();
+        }
+        catch (IllegalArgumentException ex) {
+            throw ex;
+        }
 
     }
 
@@ -112,11 +112,11 @@ Point3D center;
             //System.out.println(t2);
             if (Util.alignZero(t1) <= 0 && Util.alignZero(t2) <= 0)
                 return null;
-           if (Util.alignZero(t1) ==Util.alignZero(t2))
-               if (ray.getStart().distance(center)>=_radius)
-                return null;
-           // if (Util.alignZero(t2)==Util.alignZero(t1))
-             //   if(ray.getStart().distance(center)>)
+            if (Util.alignZero(t1) ==Util.alignZero(t2))
+                if (ray.getStart().distance(center)>=_radius)
+                    return null;
+            // if (Util.alignZero(t2)==Util.alignZero(t1))
+            //   if(ray.getStart().distance(center)>)
             List<GeoPoint> intersectionPoints = new ArrayList<GeoPoint>();
             if (Util.alignZero(t1) > 0)
                 intersectionPoints.add(new GeoPoint(this, ray.getPoint((t1))));
@@ -133,6 +133,5 @@ Point3D center;
 
         }
 
-        }
     }
-
+}

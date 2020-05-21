@@ -77,15 +77,15 @@ public class Tube extends RadialGeometry {
                 orthogonal = new Vector(1, -(this.axe.getDirection().getEnd().getX().get()+this.axe.getDirection().getEnd().getZ().get())/this.axe.getDirection().getEnd().getY().get(),1);
             else -(this.axe.getDirection().getEnd().getZ().get()+this.axe.getDirection().getEnd().getY().get())/this.axe.getDirection().getEnd().getX().get());
             Plane tangential = new Plane(point, orthogonal);*/
-            double straightDistance = this.axe.getDirection().dotProduct(point.subtract(this.axe.getStart()));
-            Point3D intersectionPointOfOrthogonalWithRay = new Point3D(this.axe.getStart().add(this.axe.getDirection().scale(straightDistance)));
-            try {
-                if (intersectionPointOfOrthogonalWithRay.subtract(point).length() != this._radius)
-                    throw new IllegalArgumentException("The point is not on the object's surface");
-            }catch (IllegalArgumentException ex){//if the points are the same
+        double straightDistance = this.axe.getDirection().dotProduct(point.subtract(this.axe.getStart()));
+        Point3D intersectionPointOfOrthogonalWithRay = new Point3D(this.axe.getStart().add(this.axe.getDirection().scale(straightDistance)));
+        try {
+            if (intersectionPointOfOrthogonalWithRay.subtract(point).length() != this._radius)
                 throw new IllegalArgumentException("The point is not on the object's surface");
-            }
-            return point.subtract(intersectionPointOfOrthogonalWithRay).normalized();
+        }catch (IllegalArgumentException ex){//if the points are the same
+            throw new IllegalArgumentException("The point is not on the object's surface");
+        }
+        return point.subtract(intersectionPointOfOrthogonalWithRay).normalized();
 
     }
 
