@@ -71,7 +71,7 @@ public class Render {
                 }
                 else {
                     Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
-                    imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint, , ).getColor());
+                    imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint, ray).getColor());
                 }
             }
         }
@@ -103,8 +103,9 @@ public class Render {
             for (LightSource lightSource : lightSources) {
                 Vector l = lightSource.getL(intersection.getPoint());
                 if (sign(alignZero(n.dotProduct(l))) == sign(alignZero(n.dotProduct(v)))) {
-                    if (unshaded(l, n, intersection, lightSource)) {
-                        Color lightIntensity = lightSource.getIntensity(intersection.getPoint());
+                    double ktr = transparency(lightSource, l, n, intersection);
+                    if (ktr*influenceLevel>MIN_CALC_COLOR_K/*unshaded(l, n, intersection, lightSource)*/ ) {
+                        Color lightIntensity = lightSource.getIntensity(intersection.getPoint()).scale(ktr);
                         color = color.add(calcDiffusive(kd, l, n, lightIntensity),
                                 calcSpecular(ks, l, n, v, nShininess, lightIntensity));
                     }
@@ -123,7 +124,7 @@ public class Render {
                 double kTransparency = intersection.getGeometry().getMaterial().getKTransparency();
                 double kkt = kTransparency*influenceLevel;
                 if(kkt>MIN_CALC_COLOR_K){
-                    Ray refractedRay = constructRefractedRay(intersection.getPoint(), inRay);
+                    Ray refractedRay = constructRefractedRay(intersection, inRay);
                     Intersectable.GeoPoint refractedPoint = findClosestPoint(refractedRay);
                     if (refractedPoint!=null)
                         color = color.add(calcColor(refractedPoint, refractedRay, level-1, kkt).scale(kTransparency));
@@ -157,8 +158,9 @@ public class Render {
      * @param inRay
      * @return
      */
-    Ray constructRefractedRay(Point3D point, Ray inRay){
-        return new Ray(point.add(inRay.getDirection().scale(0.000000000001)), inRay.getDirection());
+    Ray constructRefractedRay(Intersectable.GeoPoint point, Ray inRay){
+        return new Ray(point.getPoint().add(point.getGeometry().getNormal(point.getPoint()).scale(0.000000000001)),
+                inRay.getDirection());
     }
 
     /**
@@ -169,7 +171,10 @@ public class Render {
      * @return
      */
     private Intersectable.GeoPoint findClosestPoint(Ray ray){
-        return getClosestPoint(scene.getGeometries().findIntersections(ray));
+        List <Intersectable.GeoPoint> points = scene.getGeometries().findIntersections(ray);
+        if (points!=null)
+            return getClosestPoint(points);
+        return  null;
     }
     /**
      * function that checks which of the intersection points that were returned by findIntersections
@@ -278,7 +283,10 @@ public class Render {
      * @return
      */
     private boolean unshaded(Vector l, Vector n, Intersectable.GeoPoint gp, LightSource light){
-        Vector pointToLight = l.scale(-1);
+       // if(gp.getGeometry().getMaterial().getKTransparency()!=0)
+         //   return true;
+        Vector pointToLight = l.scale(-1); //lightDirection
+
         Vector delta = n.scale(Util.alignZero(pointToLight.dotProduct(n))>0? DELTA:-DELTA);
         Point3D point = gp.getPoint().add(delta);
         Ray toLight = new Ray(point, pointToLight);
@@ -288,16 +296,52 @@ public class Render {
 
             List<Intersectable.GeoPoint> nonFarIntersection = new ArrayList<>();
             for(Intersectable.GeoPoint intersection: intersections)
-            if(light.getDistance(intersection.getPoint())<dist)
-                nonFarIntersection.add(intersection);
+            if(/*light.getDistance(intersection.getPoint())<dist)
+                nonFarIntersection.add(intersection*/ alignZero(intersection.getPoint().distance(gp.getPoint())-dist)<=0&&intersection.getGeometry().getMaterial().getKTransparency()==0)
+                return false;
 
-            return nonFarIntersection==null;
+            //return nonFarIntersection==null;
         }
         return true;
 
     }
-    private Color calcColor(Intersectable.GeoPoint gp, Ray ray){
 
+    /**
+     * the function to get transparency level
+     * @param light
+     * @param l
+     * @param n
+     * @param geopoint
+     * @return
+     */
+    private double transparency(LightSource light, Vector l, Vector n, Intersectable.GeoPoint geopoint){
+        Vector connectingToLight = l.scale(-1);
+        Vector delta = n.scale(Util.alignZero(connectingToLight.dotProduct(n))>0? DELTA:-DELTA);
+        Point3D startPoint = geopoint.getPoint().add(delta);
+        Ray toLight = new Ray(startPoint, connectingToLight);
+        List<Intersectable.GeoPoint> intersections = scene.getGeometries().findIntersections(toLight);
+        if (intersections==null) return  1d;
+        double lightDistance = light.getDistance(geopoint.getPoint());
+        double ktr = 1d;
+        for(Intersectable.GeoPoint point: intersections){
+            if(alignZero(point.getPoint().distance(geopoint.getPoint())-lightDistance)<=0){
+                ktr*=point.getGeometry().getMaterial().getKTransparency();
+                if (ktr<=MIN_CALC_COLOR_K) return 0d;
+            }
+        }
+        return  ktr;
+    }
+
+
+    /**
+     * function that is called from renderImage();
+     * it calls for recursive calcColor and then returns it's result added to the color of the geometry
+     * @param gp
+     * @param ray
+     * @return
+     */
+    private Color calcColor(Intersectable.GeoPoint gp, Ray ray){
+        return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, 1d).add(gp.getGeometry().getEmission().scale(gp.getGeometry().getMaterial().getKTransparency()));
     }
 }
 
