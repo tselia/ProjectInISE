@@ -20,6 +20,9 @@ public class Render {
     private Scene scene;
     private  ImageWriter imageWriter ;
     private static final double DELTA = 0.1;
+    private static final int MAX_CALC_COLOR_LEVEL = 10;
+    private static final double MIN_CALC_COLOR_K = 0.001;
+
 
     /**
      *Constructor
@@ -68,7 +71,7 @@ public class Render {
                 }
                 else {
                     Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
-                    imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint).getColor());
+                    imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint, , ).getColor());
                 }
             }
         }
@@ -77,12 +80,16 @@ public class Render {
     /**
      * function that should calculate the color of specific point
      * @param intersection
+     * @param level
+     * @param influenceLevel
      * @return
      */
 
 
-    private Color calcColor(Intersectable.GeoPoint intersection) {
-        Color color = scene.getAmbientLight().getIntensity();
+    private Color calcColor(Intersectable.GeoPoint intersection, Ray inRay, int level, double influenceLevel) {
+        if(level==0||influenceLevel<MIN_CALC_COLOR_K)
+            return Color.BLACK;
+        Color color = intersection.getGeometry().getEmission();//scene.getAmbientLight().getIntensity();
         color = color.add(intersection.getGeometry().getEmission());
         Vector v = intersection.getPoint().subtract(scene.getCamera().getP0()).normalize();
         Vector n = intersection.getGeometry().getNormal(intersection.getPoint());
@@ -103,11 +110,67 @@ public class Render {
                     }
                 }
             }
+            if (level==1)
+                return Color.BLACK;
+            double kReflection = intersection.getGeometry().getMaterial().getKReflectance();
+            double kkr = kReflection*influenceLevel;
+            if(kkr>MIN_CALC_COLOR_K){
+                Ray reflectedRay=constructReflectedRay(intersection,  inRay);
+                Intersectable.GeoPoint reflectedPoint = findClosestPoint(reflectedRay);
+                if (reflectedPoint!=null){
+                    color=color.add(calcColor(reflectedPoint, reflectedRay, level-1, kkr).scale(kReflection));
+                }
+                double kTransparency = intersection.getGeometry().getMaterial().getKTransparency();
+                double kkt = kTransparency*influenceLevel;
+                if(kkt>MIN_CALC_COLOR_K){
+                    Ray refractedRay = constructRefractedRay(intersection.getPoint(), inRay);
+                    Intersectable.GeoPoint refractedPoint = findClosestPoint(refractedRay);
+                    if (refractedPoint!=null)
+                        color = color.add(calcColor(refractedPoint, refractedRay, level-1, kkt).scale(kTransparency));
+                }
+            }
+
         }
 
         return color;
     }
 
+    /**
+     * function constructs a reflected ray
+     * @param intersection
+     * @param inRay
+     * @return
+     */
+    private Ray constructReflectedRay(Intersectable.GeoPoint intersection, Ray inRay) {
+
+        Vector rayDirection = inRay.getDirection();
+        Vector normal = intersection.getGeometry().getNormal(intersection.getPoint());
+        Vector r = rayDirection.subtract(normal.scale(2*(rayDirection.dotProduct(normal))));
+        return new Ray(intersection.getPoint().add(r.scale(0.00000000001)), r);
+    }
+
+
+
+    /**
+     * function constructs a refracted ray initializing it by point that it received and the vector of the ray it received
+     * @param point
+     * @param inRay
+     * @return
+     */
+    Ray constructRefractedRay(Point3D point, Ray inRay){
+        return new Ray(point.add(inRay.getDirection().scale(0.000000000001)), inRay.getDirection());
+    }
+
+    /**
+     * function finds the closest intersection point with this ray
+     * by calling the findIntersections(Intersectable) function and then with it's result -
+     * to the getClosestPoint(List<Intersectable>) function
+     * @param ray
+     * @return
+     */
+    private Intersectable.GeoPoint findClosestPoint(Ray ray){
+        return getClosestPoint(scene.getGeometries().findIntersections(ray));
+    }
     /**
      * function that checks which of the intersection points that were returned by findIntersections
      * is the closest one to the camera
@@ -231,6 +294,9 @@ public class Render {
             return nonFarIntersection==null;
         }
         return true;
+
+    }
+    private Color calcColor(Intersectable.GeoPoint gp, Ray ray){
 
     }
 }
