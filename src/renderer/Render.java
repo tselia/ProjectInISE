@@ -97,13 +97,14 @@ public class Render {
         int nShininess = material.getNShininess();
         double kd = material.getKD();
         double ks = material.getKS();
+        double ktr = 0d;
         if (scene.getLights() != null) {
 
             List<LightSource> lightSources = scene.getLights();
             for (LightSource lightSource : lightSources) {
                 Vector l = lightSource.getL(intersection.getPoint());
                 if (sign(alignZero(n.dotProduct(l))) == sign(alignZero(n.dotProduct(v)))) {
-                    double ktr = transparency(lightSource, l, n, intersection);
+                     ktr = transparency(lightSource, l, n, intersection);
                     if (ktr*influenceLevel>MIN_CALC_COLOR_K/*unshaded(l, n, intersection, lightSource)*/ ) {
                         Color lightIntensity = lightSource.getIntensity(intersection.getPoint()).scale(ktr);
                         color = color.add(calcDiffusive(kd, l, n, lightIntensity),
@@ -127,7 +128,7 @@ public class Render {
                     Ray refractedRay = constructRefractedRay(intersection, inRay);
                     Intersectable.GeoPoint refractedPoint = findClosestPoint(refractedRay);
                     if (refractedPoint!=null)
-                        color = color.add(calcColor(refractedPoint, refractedRay, level-1, kkt).scale(kTransparency));
+                        color = color.add(calcColor(refractedPoint, refractedRay, level-1, kkt).scale(kTransparency*ktr));
                 }
             }
 
@@ -159,7 +160,7 @@ public class Render {
      * @return
      */
     Ray constructRefractedRay(Intersectable.GeoPoint point, Ray inRay){
-        return new Ray(point.getPoint().add(point.getGeometry().getNormal(point.getPoint()).scale(0.000000000001)),
+        return new Ray(point.getPoint().add(point.getGeometry().getNormal(point.getPoint()).scale(-0.1)),
                 inRay.getDirection());
     }
 
@@ -341,7 +342,7 @@ public class Render {
      * @return
      */
     private Color calcColor(Intersectable.GeoPoint gp, Ray ray){
-        return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, 1d).add(gp.getGeometry().getEmission().scale(gp.getGeometry().getMaterial().getKTransparency()));
+        return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, 1d).add(scene.getAmbientLight().getIntensity());
     }
 }
 
