@@ -89,20 +89,56 @@ public class Render {
 
 
     private Color calcColor(Intersectable.GeoPoint intersection, Ray inRay, int level, double influenceLevel) {
-        if(level==0)
-            return new Color(0, 0, 0);
-        Color color = scene.getAmbientLight().getIntensity();
-        color=color.add( intersection.getGeometry().getEmission());
+        Color color = intersection.getGeometry().getEmission();
+        if (level == 1 || influenceLevel < MIN_CALC_COLOR_K) {
+            return Color.BLACK;
+        }
+        //Color color = new Color(0, 0, 0);
+        Vector v = intersection.getPoint().subtract(scene.getCamera().getP0()).normalize();
         Vector n = intersection.getGeometry().getNormal(intersection.getPoint());
-        List<LightSource> lights = scene.getLights();
+        Material material = intersection.getGeometry().getMaterial();
+        int nShininess = material.getNShininess();
+        double kd = material.getKD();
+        double ks = material.getKS();
+        double ktr = 0d;
+        if (scene.getLights() != null) {
 
-        for(LightSource light: lights){
-            Vector l = light.getL(intersection.getPoint());
-            if(transparency(light, l, n, intersection)!=0){
-                color=color.add(pokemon and xopoweHbKoBaJI Polina);
+            List<LightSource> lightSources = scene.getLights();
+            for (LightSource lightSource : lightSources) {
+                Vector l = lightSource.getL(intersection.getPoint());
+                if (sign(alignZero(n.dotProduct(l))) == sign(alignZero(n.dotProduct(v)))) {
+                    ktr = transparency(lightSource, l, n, intersection);
+                    if (ktr * influenceLevel > MIN_CALC_COLOR_K) {
+                        Color lightIntensity = lightSource.getIntensity(intersection.getPoint()).scale(ktr);
+                        color = color.add(calcDiffusive(kd, l, n, lightIntensity),
+                                calcSpecular(ks, l, n, v, nShininess, lightIntensity));
+                    }
+
+
+                }
             }
         }
+        double kr= material.getKReflectance();
+        double kkr= influenceLevel * kr;
+        if (kkr>MIN_CALC_COLOR_K){
+            Ray reflectedRay = constructReflectedRay(intersection, inRay);
+            Intersectable.GeoPoint closestPoint = findClosestPoint(reflectedRay);
+            if(closestPoint!=null)
+                color=color.add(calcColor(closestPoint, reflectedRay, level-1, kkr).scale(kr));
+        }
+        double kt = material.getKTransparency();
+        double kkt = kt*influenceLevel;
+        if(kkt>MIN_CALC_COLOR_K){
+            Ray refractedRay = constructRefractedRay(intersection, inRay);
+            Intersectable.GeoPoint refractedPoint = findClosestPoint(refractedRay);
+            if (refractedPoint!=null)
+                color = color.add(calcColor(refractedPoint, refractedRay, level-1, kkt).scale(kt));
+        }
+        return  color;
     }
+
+
+
        /* if(level==0||influenceLevel<MIN_CALC_COLOR_K)
             return Color.BLACK;
         Color color = intersection.getGeometry().getEmission();//scene.getAmbientLight().getIntensity();
@@ -366,7 +402,8 @@ public class Render {
      * @return
      */
     private Color calcColor(Intersectable.GeoPoint gp, Ray ray){
-        return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, 1d).add(scene.getAmbientLight().getIntensity());
+        //return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, 1d).add(scene.getAmbientLight().getIntensity());
+        return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, 1.0).add(scene.getAmbientLight().getIntensity());
     }
 }
 
