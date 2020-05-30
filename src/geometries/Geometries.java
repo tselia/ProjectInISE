@@ -52,7 +52,7 @@ public class Geometries implements Intersectable {
             List<GeoPoint> currentIntersections = elements.get(i).findIntersections(ray);
             if (currentIntersections!=null) {
                 int curSize = currentIntersections.size();
-                System.out.println(curSize);
+               // System.out.println(curSize);
                 //if(intersections==null)
                 for (int j=0; j<curSize; j++){
                     intersections.add(currentIntersections.get(j));
