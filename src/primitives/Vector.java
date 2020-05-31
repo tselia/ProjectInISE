@@ -148,7 +148,9 @@ public Vector normalized(){
      * @return
      */
     public double dotProduct (Vector vec){
-        return this.end.getX()._coord*vec.end.getX()._coord + this.end.getY()._coord*vec.end.getY()._coord +this.end.getZ()._coord*vec.end.getZ()._coord;
+
+            return this.end.getX()._coord*vec.end.getX()._coord + this.end.getY()._coord*vec.end.getY()._coord +this.end.getZ()._coord*vec.end.getZ()._coord;
+
     }
 
     /**

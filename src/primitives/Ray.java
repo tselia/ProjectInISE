@@ -107,4 +107,20 @@ public class Ray {
 
     }*/
 
+    /**
+     * Constructs a ray that is moved a little bit from the received point
+     * @param point
+     * @param direction
+     * @param n
+     */
+   public Ray(Point3D point, Vector direction, Vector n) {
+       //point + normal.scale(±DELTA)
+       direction = new Vector(direction);// no need to normalize the vector - if it's a ray's direction, it's already normalized
+
+       double nDotV = n.dotProduct(direction);
+        
+       Vector normalDelta = n.scale((nDotV > 0 ? 0.1 : -0.1));
+       this.start = point.add(normalDelta);
+   }
+
 }
