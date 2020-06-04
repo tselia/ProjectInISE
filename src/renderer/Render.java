@@ -487,7 +487,7 @@ public class Render {
         for (int row = 0; row < Ny; row++) {
             for (int column = 0; column < Nx; column++) {
                 ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
-                List<Intersectable.GeoPoint> intersectionPoints = scene.getGeometries().findIntersections(ray);
+                List<Intersectable.GeoPoint> intersectionPoints = geometries.findIntersections(ray);
                 if (intersectionPoints == null) {
                     imageWriter.writePixel(column, row, background);
                 }

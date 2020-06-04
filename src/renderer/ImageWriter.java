@@ -8,6 +8,8 @@ import java.io.IOException;
 import javax.imageio.*;
 import javax.imageio.stream.*;
 
+import static java.lang.Double.NaN;
+
 /**
  * Image writer class combines accumulation of pixel color matrix and
  * finally producing a non-optimized jpeg image from this matrix.
@@ -18,6 +20,9 @@ import javax.imageio.stream.*;
 public class ImageWriter {
     private double _imageWidth, _imageHeight;
     private int _nX, _nY;
+
+    private double _focusWidth, _focusHeight;
+    private int _focusX, _focusY;
 
     private final String PROJECT_PATH = System.getProperty("user.dir");
 
@@ -35,13 +40,28 @@ public class ImageWriter {
      * @param nY amount of pixels by height
      */
     public ImageWriter(String imageName, double width, double height, int nX, int nY) {
-        _imageName = imageName;
+        this(width, height, nX, nY, Double.NaN, Double.NaN, new Integer(null), new Integer(null), imageName);
+        /*_imageName = imageName;
         _imageWidth = width;
         _imageHeight = height;
         _nX = nX;
         _nY = nY;
 
-        _image = new BufferedImage(_nX, _nY, BufferedImage.TYPE_INT_RGB);
+        _image = new BufferedImage(_nX, _nY, BufferedImage.TYPE_INT_RGB);*/
+    }
+
+    public ImageWriter(double _imageWidth, double _imageHeight, int _nX, int _nY, double _focusWidth, double _focusHeight, int _focusX, int _focusY, String _imageName) {
+        this._imageWidth = _imageWidth;
+        this._imageHeight = _imageHeight;
+        this._nX = _nX;
+        this._nY = _nY;
+        this._focusWidth = _focusWidth;
+        this._focusHeight = _focusHeight;
+        this._focusX = _focusX;
+        this._focusY = _focusY;
+        this._image = new BufferedImage(_nX, _nY, BufferedImage.TYPE_INT_RGB);
+        this._imageName = _imageName;
+        //ystem.out.println("NaN == NaN = " + (N == NAN));
     }
 
     // ***************** Getters/Setters ********************** //

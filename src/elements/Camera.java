@@ -5,6 +5,7 @@
  * authors Polina Frolov Korogodsky and Tselia Tebol
  */
 
+import geometries.Polygon;
 import primitives.Point3D;
 import primitives.Ray;
 import primitives.Vector;
@@ -16,6 +17,7 @@ import static primitives.Util.isZero;
         Vector vUp;
         Vector vTo;
         Vector vRight;
+        //Polygon focus;
 
         /**
          * constructor with parameteres
