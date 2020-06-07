@@ -183,13 +183,16 @@ public  class Color {
 
     public static Color averageColor(Color ... colors){
         Color result = colors[0];
-        for (int i=1; i<colors.length; i++) {
+        //Color result=new Color();
+        for (int i=0; i<colors.length; i++) {
             if(colors[i]!=null) {
                 result.add(colors[i]);
-                result.scale(2);
+                //return colors[i];
+                //result.scale(0.5);
             }
         }
-        return result;
+        return result.scale(1/colors.length);
+        //return new Color(new java.awt.Color(122, 32, 100));
     }
     public static Color averageColor(List<Color> colors){
         Color[]colorArray = new Color[colors.size()];

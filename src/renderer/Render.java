@@ -491,9 +491,9 @@ public class Render {
     public void renderImageWithDepthOfField() {
         System.out.println("Depth");
         java.awt.Color background = scene.getBackground().getColor();
-        Camera camera= scene.getCamera();
+        Camera camera = scene.getCamera();
         Intersectable geometries = scene.getGeometries();
-        double  distance = scene.getDistance();
+        double distance = scene.getDistance();
         Ray ray;
         // number of pixels in the rows of the view plane
         int width = (int) imageWriter.getWidth();
@@ -505,21 +505,38 @@ public class Render {
         // height of the image
         int Ny = imageWriter.getNy();
         //focal plane definition
-        Point3D planePoint =  this.scene.getCamera().getP0().add(this.scene.getCamera().getvTo().scale(this.scene.getDistance()+this.focalLength));
+        Point3D planePoint = this.scene.getCamera().getP0().add(this.scene.getCamera().getvTo().scale(this.scene.getDistance() + this.focalLength));
         Vector planeVector = this.scene.getCamera().getvTo();
         Plane focalPlane = new Plane(planePoint, planeVector);
         Camera currentCamera = this.scene.getCamera();
         //Point3D centerOfFocus = currentCamera.getP0().add(planeVector.scale(this.scene.getDistance()));
         //Plane viewPlane = new Plane(, planeVector);
-        Polygon focus = new Polygon(new Color(255, 255, 255), new Material(0, 0, 0, 1, 0), planePoint.add(currentCamera.getvUp().scale(appertureHeight/2)),
-                planePoint.add(currentCamera.getvRight().scale(apertureWidth/2)),
-                planePoint.add(currentCamera.getvUp().scale(-appertureHeight/2)),
-                planePoint.add(currentCamera.getvRight().scale(-apertureWidth/2)));
+        Polygon focus = new Polygon(new Color(255, 255, 255), new Material(0, 0, 0, 1, 0), planePoint.add(currentCamera.getvUp().scale(appertureHeight / 2)),
+                planePoint.add(currentCamera.getvRight().scale(apertureWidth / 2)),
+                planePoint.add(currentCamera.getvUp().scale(-appertureHeight / 2)),
+                planePoint.add(currentCamera.getvRight().scale(-apertureWidth / 2)));
 
 
         for (int row = 0; row < Ny; row++) {
             for (int column = 0; column < Nx; column++) {
-                ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
+                ray = currentCamera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
+                List<Intersectable.GeoPoint> focalGeoPoint = focalPlane.findIntersections(ray);
+                if (focalGeoPoint == null)
+                    throw new RuntimeException("Ray is parallel to the plane");
+                if (focus.findIntersections(ray) != null) {//if the object is in focus
+                    Point3D focalPoint = focalGeoPoint.get(0).getPoint();
+                    ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
+                    List<Intersectable.GeoPoint> intersectionPoints = geometries.findIntersections(ray);//differ between in focus / outside focus
+                    if (intersectionPoints == null) {
+                        imageWriter.writePixel(column, row, background);
+                    } else {
+                        Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                        imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint, ray).getColor());
+                    }
+                }
+
+
+            /*ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
                 List<Intersectable.GeoPoint> focalGeoPoint = focalPlane.findIntersections(ray);
                 if (focalGeoPoint == null)
                     throw new RuntimeException("Ray is parallel to the plane");
@@ -551,7 +568,7 @@ public class Render {
                     }
                     else imageWriter.writePixel(column, row, background);
 
-                    }
+                    }*/
 
 
                         /*List<Ray> depthRays = scene.getCamera().constructMultipleRaysThroughPixel(Nx, Ny, column, row, distance, width, height, numOfRays, focalPoint);
@@ -570,10 +587,9 @@ public class Render {
                     imageWriter.writePixel(column, row, new java.awt.Color(ans.getColor().getRGB()));*/
 
 
-
                 else {
                     List<Intersectable.GeoPoint> intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height));
-                    List<Color>colors = new LinkedList<>();
+                    List<Color> colors = new LinkedList<>();
 
                     if (intersectionPoints == null) {
                         colors.add(new Color(background));
@@ -581,15 +597,152 @@ public class Render {
                         Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
                         colors.add(new Color(calcColor(closestPoint, ray).getColor()));
                     }
-                    /*if(row!=0){
-                        intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx/2, Ny/2, column/2, (row-1)/2, distance, width, height));
+                    if (row != 0) {
+                        intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column, row - 1, distance, width, height));
                         if (intersectionPoints == null) {
                             colors.add(new Color(background));
                         } else {
                             Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
                             colors.add(new Color(calcColor(closestPoint, ray).getColor()));
                         }
-                    }*/
+                        if(column!=0){
+                            intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column-1, row, distance, width, height));
+                            if (intersectionPoints == null) {
+                                colors.add(new Color(background));
+                            } else {
+                                Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                            }
+                        }
+                        if(column<Nx){
+                            intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column+1, row, distance, width, height));
+                            if (intersectionPoints == null) {
+                                colors.add(new Color(background));
+                            } else {
+                                Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                            }
+                        }
+                        if(column>1){
+                            intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column-1, row, distance, width, height));
+                            if (intersectionPoints == null) {
+                                colors.add(new Color(background));
+                            } else {
+                                Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                            }
+                            if(column>2){
+                                intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column-2, row, distance, width, height));
+                                if (intersectionPoints == null) {
+                                    colors.add(new Color(background));
+                                } else {
+                                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                    colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                                }
+                            }
+                        }
+                        if(column<Nx-1){
+                            intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column+1, row, distance, width, height));
+                            if (intersectionPoints == null) {
+                                colors.add(new Color(background));
+                            } else {
+                                Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                            }
+                            if(column<Nx-2){
+                                intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column+2, row, distance, width, height));
+                                if (intersectionPoints == null) {
+                                    colors.add(new Color(background));
+                                } else {
+                                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                    colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                                }
+                            }
+                        }
+                    }  if (row!=Ny)
+                        {
+                        intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column, row  + 1, distance, width, height));
+                        if (intersectionPoints == null) {
+                            colors.add(new Color(background));
+                        } else {
+                            Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                            colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                        }
+                            if(column!=0){
+                                intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column-1, row, distance, width, height));
+                                if (intersectionPoints == null) {
+                                    colors.add(new Color(background));
+                                } else {
+                                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                    colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                                }
+                            }
+                            if(column!=Nx){
+                                intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column+1, row, distance, width, height));
+                                if (intersectionPoints == null) {
+                                    colors.add(new Color(background));
+                                } else {
+                                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                    colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                                }
+                            }
+                            if(column>1){
+                                intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column-1, row, distance, width, height));
+                                if (intersectionPoints == null) {
+                                    colors.add(new Color(background));
+                                } else {
+                                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                    colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                                }
+                                if(column>2){
+                                    intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column-2, row, distance, width, height));
+                                    if (intersectionPoints == null) {
+                                        colors.add(new Color(background));
+                                    } else {
+                                        Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                        colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                                    }
+                                }
+                            }
+                            if(column<Nx-1){
+                                intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column+1, row, distance, width, height));
+                                if (intersectionPoints == null) {
+                                    colors.add(new Color(background));
+                                } else {
+                                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                    colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                                }
+                                if(column<Nx-2){
+                                    intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column+2, row, distance, width, height));
+                                    if (intersectionPoints == null) {
+                                        colors.add(new Color(background));
+                                    } else {
+                                        Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                        colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                                    }
+                                }
+                            }
+
+                    }
+                    if( column!=0){
+                        intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column-1, row, distance, width, height));
+                        if (intersectionPoints == null) {
+                            colors.add(new Color(background));
+                        } else {
+                            Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                            colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                        }
+                    }
+                    if(column !=Nx){
+                        intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column+1, row, distance, width, height));
+                        if (intersectionPoints == null) {
+                            colors.add(new Color(background));
+                        } else {
+                            Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                            colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                        }
+                    }
+
                     //if(row!=Nx){
 
                     //}
@@ -598,6 +751,10 @@ public class Render {
             }
         }
     }
+
+
+
+
 
     /**
      * The function that saves the 3D scene's 2D representation in matrix
