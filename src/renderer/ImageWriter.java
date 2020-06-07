@@ -40,14 +40,13 @@ public class ImageWriter {
      * @param nY amount of pixels by height
      */
     public ImageWriter(String imageName, double width, double height, int nX, int nY) {
-        this(width, height, nX, nY, Double.NaN, Double.NaN, new Integer(null), new Integer(null), imageName);
-        /*_imageName = imageName;
+        _imageName = imageName;
         _imageWidth = width;
         _imageHeight = height;
         _nX = nX;
         _nY = nY;
 
-        _image = new BufferedImage(_nX, _nY, BufferedImage.TYPE_INT_RGB);*/
+        _image = new BufferedImage(_nX, _nY, BufferedImage.TYPE_INT_RGB);
     }
 
     public ImageWriter(double _imageWidth, double _imageHeight, int _nX, int _nY, double _focusWidth, double _focusHeight, int _focusX, int _focusY, String _imageName) {
@@ -117,7 +116,15 @@ public class ImageWriter {
      * @param color final color of the pixel
      */
     public void writePixel(int xIndex, int yIndex, Color color){
-        _image.setRGB(xIndex, yIndex, color.getRGB());
-    }
 
+        /*if(isInFocus(xIndex, yIndex))*/
+            _image.setRGB(xIndex, yIndex, color.getRGB());
+        //else
+          //  _image.setRGB(xIndex, yIndex, );
+    }
+/*
+    private boolean isInFocus(int xIndex, int yIndex) {
+
+    }
+*/
 }

@@ -1,5 +1,7 @@
 package primitives;
 
+import java.util.List;
+
 /**
  * Wrapper class for java.jwt.Color The constructors operate with any
  * non-negative RGB values. The colors are maintained without upper limit of
@@ -8,7 +10,7 @@ package primitives;
  *
  * @author Dan Zilberstein
  */
-public class Color {
+public  class Color {
     /**
      * The internal fields tx`o maintain RGB components as double numbers from 0 to
      * whatever...
@@ -170,6 +172,31 @@ public class Color {
         double g = _g / k;
         double b = _b / k;
         return new Color(r, g, b);
+    }
+
+    /**
+     * function averageColor is a function that finds the average color
+     * to make the blur effect in depth of field
+     * @param colors
+     * @return
+     */
+
+    public static Color averageColor(Color ... colors){
+        Color result = colors[0];
+        for (int i=1; i<colors.length; i++) {
+            if(colors[i]!=null) {
+                result.add(colors[i]);
+                result.scale(2);
+            }
+        }
+        return result;
+    }
+    public static Color averageColor(List<Color> colors){
+        Color[]colorArray = new Color[colors.size()];
+        for (int i=0; i<colors.size(); i++){
+            colorArray[i]=colors.get(i);
+        }
+        return averageColor(colorArray);
     }
 
 }

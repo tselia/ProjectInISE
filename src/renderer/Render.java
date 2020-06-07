@@ -422,13 +422,12 @@ package renderer;
 
 import elements.Camera;
 import elements.LightSource;
-import geometries.Geometries;
-import geometries.Geometry;
-import geometries.Intersectable;
+import geometries.*;
 import primitives.*;
 import scene.Scene;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import static primitives.Util.alignZero;
@@ -444,6 +443,10 @@ public class Render {
     private static final double DELTA = 0.1;
     private static final int MAX_CALC_COLOR_LEVEL = 10;
     private static final double MIN_CALC_COLOR_K = 0.001;
+    private double apertureWidth;
+    private double appertureHeight;
+    private double focalLength;
+    private int numOfRays;
 
 
     /**
@@ -452,8 +455,7 @@ public class Render {
      * @param imageWriter (ImageWriter)
      */
     public Render(Scene scene, ImageWriter imageWriter) {
-        this.scene = scene;
-        this.imageWriter = imageWriter;
+        this(imageWriter, scene, Double.NaN, Double.NaN, Double.NaN, 0);
     }
 
     /**
@@ -462,13 +464,150 @@ public class Render {
      * @param scene
      */
     public Render(ImageWriter imageWriter, Scene scene) {
-        this.scene = scene;
-        this.imageWriter = imageWriter;
+        this(imageWriter, scene, Double.NaN, Double.NaN, Double.NaN, 0);
     }
+
+    /**
+     * Constructor for DepthOfField
+     * @param imgWrt
+     * @param scene
+     * @param _ap
+     * @param _focalLength
+     * @param _nRays
+     */
+    public Render(ImageWriter imgWrt, Scene scene, double _apW, double _apHeight, double _focalLength, int _nRays){
+        this.scene = scene;
+        this.imageWriter = imgWrt;
+        this.apertureWidth = _apW;
+        this.appertureHeight = _apHeight;
+        this.focalLength = _focalLength;
+        this.numOfRays = _nRays;
+    }
+
+    public Render(Scene scene, ImageWriter imgWrt, double _apW, double _apH, double _fLength, int nRays){
+        this(imgWrt, scene, _apW, _apH, _fLength, nRays);
+    }
+
+    public void renderImageWithDepthOfField() {
+        System.out.println("Depth");
+        java.awt.Color background = scene.getBackground().getColor();
+        Camera camera= scene.getCamera();
+        Intersectable geometries = scene.getGeometries();
+        double  distance = scene.getDistance();
+        Ray ray;
+        // number of pixels in the rows of the view plane
+        int width = (int) imageWriter.getWidth();
+        // number of pixels in the columns of the view plane
+        int height = (int) imageWriter.getHeight();
+
+        //  width of the image.
+        int Nx = imageWriter.getNx();
+        // height of the image
+        int Ny = imageWriter.getNy();
+        //focal plane definition
+        Point3D planePoint =  this.scene.getCamera().getP0().add(this.scene.getCamera().getvTo().scale(this.scene.getDistance()+this.focalLength));
+        Vector planeVector = this.scene.getCamera().getvTo();
+        Plane focalPlane = new Plane(planePoint, planeVector);
+        Camera currentCamera = this.scene.getCamera();
+        //Point3D centerOfFocus = currentCamera.getP0().add(planeVector.scale(this.scene.getDistance()));
+        //Plane viewPlane = new Plane(, planeVector);
+        Polygon focus = new Polygon(new Color(255, 255, 255), new Material(0, 0, 0, 1, 0), planePoint.add(currentCamera.getvUp().scale(appertureHeight/2)),
+                planePoint.add(currentCamera.getvRight().scale(apertureWidth/2)),
+                planePoint.add(currentCamera.getvUp().scale(-appertureHeight/2)),
+                planePoint.add(currentCamera.getvRight().scale(-apertureWidth/2)));
+
+
+        for (int row = 0; row < Ny; row++) {
+            for (int column = 0; column < Nx; column++) {
+                ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
+                List<Intersectable.GeoPoint> focalGeoPoint = focalPlane.findIntersections(ray);
+                if (focalGeoPoint == null)
+                    throw new RuntimeException("Ray is parallel to the plane");
+                if (focus.findIntersections(ray) != null) {//if the object is in focus
+                    Point3D focalPoint = focalGeoPoint.get(0).getPoint();
+
+
+                    List<Ray> depthRays = new ArrayList<>();
+                    for(int w=0; w<apertureWidth; w++) {
+                        for (int h = 0; h < appertureHeight; h++) {
+
+                            depthRays.add(currentCamera.constructRayThroughPixel((Nx + w + h) * numOfRays, (Ny + w + h) * numOfRays, (column + w + h) * numOfRays, (row + w + h) * numOfRays, distance, width, height));
+                        }
+                    }
+                    Color[] colors = new Color[depthRays.size()];
+                    for (int k=0; k<depthRays.size()-1; k++){
+                        List<Intersectable.GeoPoint> intersectionPoints = geometries.findIntersections(depthRays.get(k));//differ between in focus / outside focus
+                        if (intersectionPoints == null) {
+                            //imageWriter.writePixel(column, row, background);
+                            colors[k] = this.scene.getBackground();
+                        } else {
+                            Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                            colors[k] = calcColor(closestPoint, ray);
+                        }
+                    }
+                    if(colors!=null) {
+                        Color ans = Color.averageColor(colors);
+                        imageWriter.writePixel(column, row, new java.awt.Color(ans.getColor().getRGB()));
+                    }
+                    else imageWriter.writePixel(column, row, background);
+
+                    }
+
+
+                        /*List<Ray> depthRays = scene.getCamera().constructMultipleRaysThroughPixel(Nx, Ny, column, row, distance, width, height, numOfRays, focalPoint);
+                    for (int i = 0; i < numOfRays; i++) {
+
+                        List<Intersectable.GeoPoint> intersectionPoints = geometries.findIntersections(depthRays.get(i));//differ between in focus / outside focus
+                        if (intersectionPoints == null) {
+                            //imageWriter.writePixel(column, row, background);
+                            colors[i] = this.scene.getBackground();
+                        } else {
+                            Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                            colors[i] = calcColor(closestPoint, ray);
+                        }
+                    }
+                    Color ans = Color.averageColor(colors);
+                    imageWriter.writePixel(column, row, new java.awt.Color(ans.getColor().getRGB()));*/
+
+
+
+                else {
+                    List<Intersectable.GeoPoint> intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height));
+                    List<Color>colors = new LinkedList<>();
+
+                    if (intersectionPoints == null) {
+                        colors.add(new Color(background));
+                    } else {
+                        Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                        colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                    }
+                    /*if(row!=0){
+                        intersectionPoints = geometries.findIntersections(currentCamera.constructRayThroughPixel(Nx/2, Ny/2, column/2, (row-1)/2, distance, width, height));
+                        if (intersectionPoints == null) {
+                            colors.add(new Color(background));
+                        } else {
+                            Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                            colors.add(new Color(calcColor(closestPoint, ray).getColor()));
+                        }
+                    }*/
+                    //if(row!=Nx){
+
+                    //}
+                    imageWriter.writePixel(column, row, new java.awt.Color(Color.averageColor(colors).getColor().getRGB()));
+                }
+            }
+        }
+    }
+
     /**
      * The function that saves the 3D scene's 2D representation in matrix
      */
     public void renderImage() {
+        if(this.apertureWidth!=Double.NaN){
+            renderImageWithDepthOfField();
+            return;
+        }
+
         java.awt.Color background = scene.getBackground().getColor();
         Camera camera= scene.getCamera();
         Intersectable geometries = scene.getGeometries();
@@ -487,7 +626,7 @@ public class Render {
         for (int row = 0; row < Ny; row++) {
             for (int column = 0; column < Nx; column++) {
                 ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
-                List<Intersectable.GeoPoint> intersectionPoints = geometries.findIntersections(ray);
+                List<Intersectable.GeoPoint> intersectionPoints = geometries.findIntersections(ray);//differ between in focus / outside focus
                 if (intersectionPoints == null) {
                     imageWriter.writePixel(column, row, background);
                 }
@@ -556,63 +695,6 @@ public class Render {
         }
         return  color;
     }
-
-
-
-       /* if(level==0||influenceLevel<MIN_CALC_COLOR_K)
-            return Color.BLACK;
-        Color color = intersection.getGeometry().getEmission();//scene.getAmbientLight().getIntensity();
-        color = color.add(intersection.getGeometry().getEmission());
-        Vector v = intersection.getPoint().subtract(scene.getCamera().getP0()).normalize();
-        Vector n = intersection.getGeometry().getNormal(intersection.getPoint());
-        Material material = intersection.getGeometry().getMaterial();
-        int nShininess = material.getNShininess();
-        double kd = material.getKD();
-        double ks = material.getKS();
-        double ktr = 0d;
-        if (scene.getLights() != null) {
-            List<LightSource> lightSources = scene.getLights();
-            for (LightSource lightSource : lightSources) {
-                Vector l = lightSource.getL(intersection.getPoint());
-                if (sign(alignZero(n.dotProduct(l))) == sign(alignZero(n.dotProduct(v)))) {
-                     ktr = transparency(lightSource, l, n, intersection);
-                    if (ktr*influenceLevel>MIN_CALC_COLOR_K ) {
-                        Color lightIntensity = lightSource.getIntensity(intersection.getPoint()).scale(ktr);
-                        color = color.add(calcDiffusive(kd, l, n, lightIntensity),
-                                calcSpecular(ks, l, n, v, nShininess, lightIntensity));
-                    }
-                }
-            }
-            if (level==1)
-                return Color.BLACK;
-            double kReflection = intersection.getGeometry().getMaterial().getKReflectance();
-            //System.out.println(kReflection);
-            double kkr = kReflection*influenceLevel;
-            //System.out.println(kkr);
-            if(kkr>MIN_CALC_COLOR_K){
-               // System.out.println("I am here!");
-                Ray reflectedRay=constructReflectedRay(intersection,  inRay);
-                Intersectable.GeoPoint reflectedPoint = findClosestPoint(reflectedRay);
-                if (reflectedPoint!=null){
-                    color=color.add(calcColor(reflectedPoint, reflectedRay, level-1, kkr).scale(kReflection));
-                }
-                double kTransparency = intersection.getGeometry().getMaterial().getKTransparency();
-                double kkt = kTransparency*influenceLevel;
-               // System.out.println(influenceLevel);
-                if(kkt>MIN_CALC_COLOR_K){
-                    //System.out.println("I am here");
-                    Ray refractedRay = constructRefractedRay(intersection, inRay);
-                    Intersectable.GeoPoint refractedPoint = findClosestPoint(refractedRay);
-                    if (refractedPoint!=null) {
-                        color = color.add(calcColor(refractedPoint, refractedRay, level - 1, kkt).scale(ktr * kTransparency));
-                        //return color;
-                      // System.out.println("I am here");
-                    }
-                }
-            }
-        }
-        return color;
-    }*/
 
     /**
      * function constructs a reflected ray
@@ -684,8 +766,8 @@ public class Render {
      */
     public void printGrid(int interval, java.awt.Color color) {
         double rows = this.imageWriter.getNx();
-        double collumns = this.imageWriter.getNy();
-        for (int col = 0; col < collumns; col++) {
+        double columns = this.imageWriter.getNy();
+        for (int col = 0; col < columns; col++) {
             for (int row = 0; row < rows; row++) {
                 if (col % interval == 0 || row % interval == 0) {
                     imageWriter.writePixel(row, col, color);
