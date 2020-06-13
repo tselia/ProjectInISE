@@ -9,6 +9,12 @@ import renderer.ImageWriter;
 import renderer.Render;
 import scene.Scene;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * Test rendering abasic image
  *
@@ -70,5 +76,20 @@ public class RenderTest {
         render.renderImage();
         render.printGrid(50, java.awt.Color.WHITE);
         render.writeToImage();
+    }
+
+    @Test
+    void averageColor(){
+        Color truth = new Color(79, 178, 154);
+        List<java.awt.Color> clrs = new ArrayList<>();
+        clrs.add(new java.awt.Color(15, 228, 176));
+        clrs.add(new java.awt.Color(10, 28, 197));
+        clrs.add(new java.awt.Color(151, 201, 7));
+        clrs.add(new java.awt.Color(140, 255, 236));
+
+        //Color result = Render.averageColor(clrs);
+        //assertEquals(truth.getColor().getRed(), result.getColor().getRed(), "Red error");//3
+        //assertEquals(truth.getColor().getGreen(), result.getColor().getGreen(), "Green Error");//57
+        //assertEquals(truth.getColor().getBlue(), result.getColor().getBlue(), "Blue error");//44
     }
 }

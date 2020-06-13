@@ -190,6 +190,7 @@ public  class Color {
                 //return colors[i];
                 //result.scale(0.5);
             }
+            return result.scale(1/colors.length);
         }
         return result.scale(1/colors.length);
         //return new Color(new java.awt.Color(122, 32, 100));
