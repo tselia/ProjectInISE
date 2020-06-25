@@ -35,7 +35,7 @@ public class ShadowTests {
                 new Point3D(-100, 100, -200), new Vector(1, -1, 3), 1, 1E-5, 1.5E-7));
 
         ImageWriter imageWriter = new ImageWriter("sphereTriangleInitial - supersampled", 200, 200, 400, 400);
-        Render render = new Render(imageWriter, scene, 30);
+        Render render = new Render(imageWriter, scene, 5);
 
         render.renderImage();
         render.writeToImage();

@@ -108,6 +108,24 @@ public class ImageWriter {
         }
     }
 
+    public BufferedImage getImage(){
+        return _image;
+    }
+
+    public void writeToImage(BufferedImage image){
+        File ouFile = new File(PROJECT_PATH + "/" + _imageName + ".jpg");
+        try{
+        javax.imageio.ImageWriter jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
+        ImageWriteParam jpgWriteParam = jpgWriter.getDefaultWriteParam();
+        jpgWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+        jpgWriteParam.setCompressionQuality(1f);
+        jpgWriter.setOutput(new FileImageOutputStream(ouFile));
+        jpgWriter.write(null,new IIOImage(image, null, null), jpgWriteParam);
+        //ImageIO.write(_image, "jpg", ouFile);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    }
     /**
      * The function writePixel writes a color of a specific pixel
      * into pixel color matrix
