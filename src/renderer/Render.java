@@ -872,13 +872,14 @@ package renderer;
 
 import elements.Camera;
 import elements.LightSource;
-import geometries.Geometries;
-import geometries.Geometry;
 import geometries.Intersectable;
 import primitives.*;
 import scene.Scene;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 import static primitives.Util.alignZero;
@@ -1161,11 +1162,11 @@ public class Render {
      * function that saves matrix as picture
      */
     public void writeToImage() {
-        if(numSuperSampling==0)
+        if(numSuperSampling==1)
             imageWriter.writeToImage();
         else {
             Supersampling sps = new Supersampling((int)imageWriter.getWidth(), (int)imageWriter.getHeight(), numSuperSampling);
-            imageWriter.writeToImage(sps.processImage(imageWriter.getImage()));
+            imageWriter.writeToImage(sps.superSamplingImprovement(imageWriter.getImage()));
         }
     }
 
@@ -1289,5 +1290,137 @@ public class Render {
     private Color calcColor(Intersectable.GeoPoint gp, Ray ray){
         //return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, 1d).add(scene.getAmbientLight().getIntensity());
         return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, 1.0).add(scene.getAmbientLight().getIntensity());
+    }
+    public class Supersampling {
+        /**
+         * Constructor for the Supersampling object, by width,
+         * height and num of additional rays added in renderer
+         * @param _outW
+         * @param _outH
+         * @param samples
+         */
+        public Supersampling(int _outW, int _outH, int samples) {
+            outWidth = _outW*2;
+            outHeight = _outH*2;
+            nSamples = samples;
+        }
+
+        /**
+         * Function that makes the supersampling effect by making the average color of supersampling^2
+         * pixels and saving it to the new image
+         * @param image
+         * @return
+         */
+        public BufferedImage superSamplingImprovement(BufferedImage image) {
+            BufferedImage output = new BufferedImage(image.getColorModel(), image.getColorModel().createCompatibleWritableRaster(outWidth, outHeight), false, new Hashtable<String, Object>());
+            WritableRaster sourceRaster = image.getRaster();
+            WritableRaster outRaster = output.getRaster();
+            int sourceNumBands = sourceRaster.getNumBands();
+
+            for(int x = 0; x < outRaster.getWidth(); x++) {
+                for(int y = 0; y < outRaster.getHeight(); y++) {
+                    double[] newValues = new double[sourceNumBands];
+
+                    for(int i = 0; i < nSamples; i++) {
+                        for(int j = 0; j < nSamples; j++) {
+                            for(int k = 0; k < sourceNumBands; k++) {
+
+                                // System.out.println("x*_samples+i= " + x*_samples+i +" i= "+i);
+                                // System.out.println("y*_samples+j= " + y*_samples+j +" j= "+j);
+                                // System.out.println("*****************************************");
+                                try {
+                                    newValues[k] += sourceRaster.getSample(x * nSamples + i, y * nSamples + j, k);
+
+                                }
+                                catch (Exception ex){
+                                    System.out.println("width = " + sourceRaster.getWidth());
+                                    System.out.println("height= "+ sourceRaster.getHeight());
+                                    System.out.println("samples= "+ nSamples);
+                                    //System.out.println("SystemModelTranslateY" + sourceRaster.getSys);
+                                    throw ex;
+                                }
+                            }
+                        }
+                    }
+
+                    for(int i = 0; i < newValues.length; i++) {
+                        newValues[i] = newValues[i]/(nSamples * nSamples);
+                        outRaster.setSample(x, y, i, newValues[i]);
+                    }
+
+
+                }
+            }
+
+            return output;
+        }
+
+        private int outWidth, outHeight, nSamples;
+        private class Supersampling {
+            /**
+             * Constructor for the Supersampling object, by width,
+             * height and num of additional rays added in renderer
+             * @param _outW
+             * @param _outH
+             * @param samples
+             */
+            public Supersampling(int _outW, int _outH, int samples) {
+                outWidth = _outW*2;
+                outHeight = _outH*2;
+                nSamples = samples;
+            }
+
+            /**
+             * Function that makes the supersampling effect by making the average color of supersampling^2
+             * pixels and saving it to the new image
+             * @param image
+             * @return
+             */
+            public BufferedImage superSamplingImprovement(BufferedImage image) {
+                BufferedImage output = new BufferedImage(image.getColorModel(), image.getColorModel().createCompatibleWritableRaster(outWidth, outHeight), false, new Hashtable<String, Object>());
+                WritableRaster sourceRaster = image.getRaster();
+                WritableRaster outRaster = output.getRaster();
+                int sourceNumBands = sourceRaster.getNumBands();
+
+                for(int x = 0; x < outRaster.getWidth(); x++) {
+                    for(int y = 0; y < outRaster.getHeight(); y++) {
+                        double[] newValues = new double[sourceNumBands];
+
+                        for(int i = 0; i < nSamples; i++) {
+                            for(int j = 0; j < nSamples; j++) {
+                                for(int k = 0; k < sourceNumBands; k++) {
+
+                                    // System.out.println("x*_samples+i= " + x*_samples+i +" i= "+i);
+                                    // System.out.println("y*_samples+j= " + y*_samples+j +" j= "+j);
+                                    // System.out.println("*****************************************");
+                                    try {
+                                        newValues[k] += sourceRaster.getSample(x * nSamples + i, y * nSamples + j, k);
+
+                                    }
+                                    catch (Exception ex){
+                                        System.out.println("width = " + sourceRaster.getWidth());
+                                        System.out.println("height= "+ sourceRaster.getHeight());
+                                        System.out.println("samples= "+ nSamples);
+                                        //System.out.println("SystemModelTranslateY" + sourceRaster.getSys);
+                                        throw ex;
+                                    }
+                                }
+                            }
+                        }
+
+                        for(int i = 0; i < newValues.length; i++) {
+                            newValues[i] = newValues[i]/(nSamples * nSamples);
+                            outRaster.setSample(x, y, i, newValues[i]);
+                        }
+
+
+                    }
+                }
+
+                return output;
+            }
+
+            private int outWidth, outHeight, nSamples;
+        }
     }
 }
