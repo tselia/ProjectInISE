@@ -903,7 +903,7 @@ public class Render {
      * @param imageWriter (ImageWriter)
      */
     public Render(Scene scene, ImageWriter imageWriter) {
-        this(scene, imageWriter, 0);
+        this(scene, imageWriter, 1);
     }
 
     /**
@@ -912,7 +912,7 @@ public class Render {
      * @param scene
      */
     public Render(ImageWriter imageWriter, Scene scene) {
-        this(scene, imageWriter, 0);
+        this(scene, imageWriter, 1);
     }
 
     public Render(ImageWriter imgwrt, Scene scene, int _nS){
@@ -929,6 +929,8 @@ public class Render {
      */
     public void renderImage() {
        // if(numSuperSampling==0) {
+            //String name = this.imageWriter.getImageName();
+            this.imageWriter = new ImageWriter(imageWriter.getImageName(), imageWriter.getWidth(), imageWriter.getHeight(), imageWriter.getNx()*numSuperSampling, imageWriter.getNy()*numSuperSampling);
             java.awt.Color background = scene.getBackground().getColor();
             Camera camera = scene.getCamera();
             Intersectable geometries = scene.getGeometries();

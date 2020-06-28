@@ -140,6 +140,10 @@ public class ImageWriter {
         //else
           //  _image.setRGB(xIndex, yIndex, );
     }
+
+    public String getImageName() {
+        return _imageName;
+    }
 /*
     private boolean isInFocus(int xIndex, int yIndex) {
 
