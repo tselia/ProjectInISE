@@ -1110,7 +1110,7 @@ public class Render {
         if(numSuperSampling==1)
             imageWriter.writeToImage();
         else {
-            Supersampling sps = new Supersampling(imageWriter.getNx(), imageWriter.getNy(), numSuperSampling);
+            Supersampling sps = new Supersampling((int)imageWriter.getWidth(), (int)imageWriter.getHeight(), numSuperSampling);
             imageWriter.writeToImage(sps.superSamplingImprovement(imageWriter.getImage()));
         }
     }

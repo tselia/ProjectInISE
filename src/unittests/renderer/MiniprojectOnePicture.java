@@ -122,8 +122,8 @@ public class MiniprojectOnePicture {
 
 
 
-        ImageWriter imageWriter = new ImageWriter("SolarSystemSuperSampled15FinalPicture", 800, 500, 1600, 1000);
-        Render render = new Render(imageWriter, scene, 8);
+        ImageWriter imageWriter = new ImageWriter("SolarSystemSuperSimpled", 800, 500, 1600, 1000);
+        Render render = new Render(imageWriter, scene, 15);
 
         render.renderImage();
         render.writeToImage();
