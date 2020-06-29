@@ -1023,61 +1023,6 @@ public class Render {
 
 
 
-       /* if(level==0||influenceLevel<MIN_CALC_COLOR_K)
-            return Color.BLACK;
-        Color color = intersection.getGeometry().getEmission();//scene.getAmbientLight().getIntensity();
-        color = color.add(intersection.getGeometry().getEmission());
-        Vector v = intersection.getPoint().subtract(scene.getCamera().getP0()).normalize();
-        Vector n = intersection.getGeometry().getNormal(intersection.getPoint());
-        Material material = intersection.getGeometry().getMaterial();
-        int nShininess = material.getNShininess();
-        double kd = material.getKD();
-        double ks = material.getKS();
-        double ktr = 0d;
-        if (scene.getLights() != null) {
-            List<LightSource> lightSources = scene.getLights();
-            for (LightSource lightSource : lightSources) {
-                Vector l = lightSource.getL(intersection.getPoint());
-                if (sign(alignZero(n.dotProduct(l))) == sign(alignZero(n.dotProduct(v)))) {
-                     ktr = transparency(lightSource, l, n, intersection);
-                    if (ktr*influenceLevel>MIN_CALC_COLOR_K ) {
-                        Color lightIntensity = lightSource.getIntensity(intersection.getPoint()).scale(ktr);
-                        color = color.add(calcDiffusive(kd, l, n, lightIntensity),
-                                calcSpecular(ks, l, n, v, nShininess, lightIntensity));
-                    }
-                }
-            }
-            if (level==1)
-                return Color.BLACK;
-            double kReflection = intersection.getGeometry().getMaterial().getKReflectance();
-            //System.out.println(kReflection);
-            double kkr = kReflection*influenceLevel;
-            //System.out.println(kkr);
-            if(kkr>MIN_CALC_COLOR_K){
-               // System.out.println("I am here!");
-                Ray reflectedRay=constructReflectedRay(intersection,  inRay);
-                Intersectable.GeoPoint reflectedPoint = findClosestPoint(reflectedRay);
-                if (reflectedPoint!=null){
-                    color=color.add(calcColor(reflectedPoint, reflectedRay, level-1, kkr).scale(kReflection));
-                }
-                double kTransparency = intersection.getGeometry().getMaterial().getKTransparency();
-                double kkt = kTransparency*influenceLevel;
-               // System.out.println(influenceLevel);
-                if(kkt>MIN_CALC_COLOR_K){
-                    //System.out.println("I am here");
-                    Ray refractedRay = constructRefractedRay(intersection, inRay);
-                    Intersectable.GeoPoint refractedPoint = findClosestPoint(refractedRay);
-                    if (refractedPoint!=null) {
-                        color = color.add(calcColor(refractedPoint, refractedRay, level - 1, kkt).scale(ktr * kTransparency));
-                        //return color;
-                      // System.out.println("I am here");
-                    }
-                }
-            }
-        }
-        return color;
-    }*/
-
     /**
      * function constructs a reflected ray
      * @param intersection
@@ -1165,7 +1110,7 @@ public class Render {
         if(numSuperSampling==1)
             imageWriter.writeToImage();
         else {
-            Supersampling sps = new Supersampling((int)imageWriter.getWidth(), (int)imageWriter.getHeight(), numSuperSampling);
+            Supersampling sps = new Supersampling(imageWriter.getNx(), imageWriter.getNy(), numSuperSampling);
             imageWriter.writeToImage(sps.superSamplingImprovement(imageWriter.getImage()));
         }
     }
@@ -1304,8 +1249,9 @@ public class Render {
          * @param _outH
          * @param samples
          */
+        //private BufferedImage imageForImprovement;
         public Supersampling(int _outW, int _outH, int samples) {
-            outWidth = _outW*maxPictureScalingLevel;
+            outWidth = _outW* maxPictureScalingLevel;
             outHeight = _outH*maxPictureScalingLevel;
             nSamples = samples;
         }

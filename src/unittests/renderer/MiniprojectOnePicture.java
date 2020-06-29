@@ -21,7 +21,7 @@ public class MiniprojectOnePicture {
     void spherePic1() {
 
         Scene scene = new Scene("Test scene");
-        scene.setCamera(new Camera(new Point3D(0, 0, -1000), new Vector(0, -1, 0), new Vector(0, 0, 1)));
+        scene.setCamera(new Camera(new Point3D(50, 100, -1700), new Vector(0, -1, 0), new Vector(0, 0, 1)));
         scene.setDistance(1000);
         scene.setBackground(/*Color.BLACK);*/new Color(5,15,30));
         scene.setAmbientLight(new AmbientLight(Color.BLACK, 0));
@@ -33,21 +33,21 @@ public class MiniprojectOnePicture {
         ,  new Sphere(new Color(190,180,60), new Material(0.5, 0.5, 100), 50, new Point3D(-550, 0, 100)));
         */
         scene.addGeometries(
-                new Sphere(new Color(255,200,40), new Material(0.5, 0.5, 300, 0.15, 0.05), 330, new Point3D(-755, -440, 100))
+                new Sphere(new Color(255,200,40), new Material(0.5, 0.5, 300, 0.25, 0.05), 330, new Point3D(-755, -440, 100))
 
                 // planets
-                ,  new Sphere(new Color(90,110,125), new Material(0.5, 0.5, 100), 40, new Point3D(-410, -200, 20))
-                ,  new Sphere(new Color(220,150,60), new Material(0.5, 0.5, 100), 50, new Point3D(-480, 10, 20))
+                ,  new Sphere(new Color(90,110,125), new Material(0.5, 0.5, 100, 0, 0.01), 40, new Point3D(-410, -200, 20))
+                ,  new Sphere(new Color(220,150,60), new Material(0.5, 0.5, 110, 0, 0.09), 50, new Point3D(-480, 10, 20))
                 ,  new Sphere(new Color(60,150,220), new Material(0.5, 0.7, 100, 0, 0.5), 60, new Point3D(-220, 0, 20))
 
 
-                ,  new Sphere(new Color(215,85,60), new Material(0.5, 0.5, 100), 50, new Point3D(-30, -150, 20))
+                ,  new Sphere(new Color(215,85,60), new Material(0.5, 0.5, 120, 0, 0.15), 50, new Point3D(-30, -150, 20))
                 ,  new Sphere(new Color(225,175,105), new Material(0.5, 0.5, 100, 0, 0.4), 100, new Point3D(130, 0, 20))
                 ,  new Sphere(new Color(143, 161, 102/*250,220,80*/), new Material(0.5, 0.5, 100, 0.3, 0), 90, new Point3D(290, 180, 20))
-                ,  new Sphere(new Color(20,205,230), new Material(0.5, 0.5, 100), 55, new Point3D(440, -80, 20))
-                ,  new Sphere(new Color(40,145,190), new Material(0.5, 0.5, 100), 55, new Point3D(590, 90, 20))
+                ,  new Sphere(new Color(20,205,230), new Material(0.5, 0.5, 100, 0, 0.09), 55, new Point3D(440, -80, 20))
+                ,  new Sphere(new Color(40,145,190), new Material(0.5, 0.3, 100, 0, 0.11), 55, new Point3D(590, 90, 20))
 
-                ,  new Sphere(new Color(160,160,160), new Material(0.5, 0.5, 100), 20, new Point3D(-290, -30, 20))
+                ,  new Sphere(new Color(160,160,160), new Material(0.5, 0.5, 100, 0.1, 0.17), 20, new Point3D(-290, -30, 20))
 
                 //star
                 , new Triangle(new Color(255,255,255), new Material(0.8, 0.2, 300),
@@ -122,8 +122,8 @@ public class MiniprojectOnePicture {
 
 
 
-        ImageWriter imageWriter = new ImageWriter("SolarSystemSuperSampled", 400, 400, 800, 800);
-        Render render = new Render(imageWriter, scene, 15);
+        ImageWriter imageWriter = new ImageWriter("SolarSystemSuperSampled15FinalPicture", 800, 500, 1600, 1000);
+        Render render = new Render(imageWriter, scene, 8);
 
         render.renderImage();
         render.writeToImage();
