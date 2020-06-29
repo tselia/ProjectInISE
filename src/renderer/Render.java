@@ -1296,6 +1296,7 @@ public class Render {
      * Inner class for the renderer use for supersampling only
      */
     private class Supersampling {
+        private int maxPictureScalingLevel = 2;
         /**
          * Constructor for the Supersampling object, by width,
          * height and num of additional rays added in renderer
@@ -1304,8 +1305,8 @@ public class Render {
          * @param samples
          */
         public Supersampling(int _outW, int _outH, int samples) {
-            outWidth = _outW*2;
-            outHeight = _outH*2;
+            outWidth = _outW*maxPictureScalingLevel;
+            outHeight = _outH*maxPictureScalingLevel;
             nSamples = samples;
         }
 
