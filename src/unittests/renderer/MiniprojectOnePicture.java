@@ -1,3 +1,9 @@
+
+/**
+ * Mini project 1
+
+ * GitHub repository: https://github.com/polinafr/ProjectInISE
+ */
 package unittests.renderer;
 
 import elements.AmbientLight;
@@ -15,8 +21,16 @@ import renderer.ImageWriter;
 import renderer.Render;
 import scene.Scene;
 
+/**
+ * Class MiniprojectOnePicture contains a function that makes a picture of Solar System
+ * The level of Supersamling effect is defined by third parameter of Render constructor
+ * If there are two parametres only the picture will not be supersampled
+ * Final pictures' names contain word "Final"
+ */
 public class MiniprojectOnePicture {
-
+    /**
+     * function creates a picture of Solar System
+     */
     @Test
     void spherePic1() {
 
@@ -122,8 +136,8 @@ public class MiniprojectOnePicture {
 
 
 
-        ImageWriter imageWriter = new ImageWriter("SolarSystemSuperSimpled", 800, 500, 1600, 1000);
-        Render render = new Render(imageWriter, scene, 15);
+        ImageWriter imageWriter = new ImageWriter("SolarSystemSupersampled", 800, 500, 1600, 1000);
+        Render render = new Render(imageWriter, scene, 10);
 
         render.renderImage();
         render.writeToImage();
