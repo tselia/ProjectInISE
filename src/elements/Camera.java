@@ -119,46 +119,46 @@ import static primitives.Util.isZero;
 
         }
 
-        public List<Ray> constructMultipleRaysThroughPixel(int nX, int nY, int j, int i, double screenDistance,
-                                                           double screenWidth, double screenHeight, int nRays,
-                                                           /*double gridLength,*/ Point3D focalPoint){
-            //double distance = gridLength/nRays;
-            Ray mainRay = this.constructRayThroughPixel(nX, nY, j, i, screenDistance, screenWidth, screenHeight);
-            Plane viewPlane = new Plane(p0.add(vTo.scale(screenDistance)), vTo);
+//        public List<Ray> constructMultipleRaysThroughPixel(int nX, int nY, int j, int i, double screenDistance,
+//                                                           double screenWidth, double screenHeight, int nRays,
+//                                                           /*double gridLength,*/ Point3D focalPoint){
+//            //double distance = gridLength/nRays;
+//            Ray mainRay = this.constructRayThroughPixel(nX, nY, j, i, screenDistance, screenWidth, screenHeight);
+//            Plane viewPlane = new Plane(p0.add(vTo.scale(screenDistance)), vTo);
+//
+//            Point3D centerOfPixel = viewPlane.findIntersections(mainRay).get(0).getPoint();
+//
+//            //getting the left/ right pixel's center
+//            double distanceToTheNearestPixel = 0;
+//            if(i!=0){
+//                Ray leftRay = this.constructRayThroughPixel(nX, nY, j, i-1, screenDistance, screenWidth, screenHeight);
+//                Point3D leftCenter = viewPlane.findIntersections(leftRay).get(0).getPoint();
+//                distanceToTheNearestPixel = centerOfPixel.distance(leftCenter)/2;
+//            }
+//            else {
+//                Ray rightRay = this.constructRayThroughPixel(nX, nY, j, i+1, screenDistance, screenWidth, screenHeight);
+//                Point3D rightCenter = viewPlane.findIntersections(rightRay).get(0).getPoint();
+//                distanceToTheNearestPixel=centerOfPixel.distance(rightCenter)/2;
+//
+//            }
+//            double distance = distanceToTheNearestPixel*2;
+//            List<Ray> rays = new ArrayList<>();
+//            //boolean rayNumEven = nRays/2==0;
+//            for(int rayNum=0; rayNum<nRays; rayNum++) {
+//                double coefficient = rayNum * distance;
+//
+//                    if (rayNum > nRays / 2)
+//                        coefficient = -coefficient;
+//
+//                Point3D startOfRay = centerOfPixel.add(vTo.scale(0.1));
+//                if(coefficient!=0)
+//                    startOfRay = centerOfPixel.add(vRight.scale(coefficient));
+//                rays.add(new Ray(startOfRay, startOfRay.subtract(focalPoint)));
+//            }
+//            return rays;
 
-            Point3D centerOfPixel = viewPlane.findIntersections(mainRay).get(0).getPoint();
 
-            //getting the left/ right pixel's center
-            double distanceToTheNearestPixel = 0;
-            if(i!=0){
-                Ray leftRay = this.constructRayThroughPixel(nX, nY, j, i-1, screenDistance, screenWidth, screenHeight);
-                Point3D leftCenter = viewPlane.findIntersections(leftRay).get(0).getPoint();
-                distanceToTheNearestPixel = centerOfPixel.distance(leftCenter)/2;
-            }
-            else {
-                Ray rightRay = this.constructRayThroughPixel(nX, nY, j, i+1, screenDistance, screenWidth, screenHeight);
-                Point3D rightCenter = viewPlane.findIntersections(rightRay).get(0).getPoint();
-                distanceToTheNearestPixel=centerOfPixel.distance(rightCenter)/2;
-
-            }
-            double distance = distanceToTheNearestPixel*2;
-            List<Ray> rays = new ArrayList<>();
-            //boolean rayNumEven = nRays/2==0;
-            for(int rayNum=0; rayNum<nRays; rayNum++) {
-                double coefficient = rayNum * distance;
-
-                    if (rayNum > nRays / 2)
-                        coefficient = -coefficient;
-
-                Point3D startOfRay = centerOfPixel.add(vTo.scale(0.1));
-                if(coefficient!=0)
-                    startOfRay = centerOfPixel.add(vRight.scale(coefficient));
-                rays.add(new Ray(startOfRay, startOfRay.subtract(focalPoint)));
-            }
-            return rays;
-
-
-        }
+      //  }
 
 
 

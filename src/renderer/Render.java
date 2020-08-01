@@ -27,6 +27,22 @@ public class Render {
     private static final int MAX_CALC_COLOR_LEVEL = 10;
     private static final double MIN_CALC_COLOR_K = 0.001;
 
+    private int _threads= 1;
+    private final int SPARE_THREADS= 2; // Spare threads if trying to use all the cores
+    private boolean _print= false; // printing progress percentage
+    /*** Set multithreading <br>* -if the parameter is 0 -number of coressless SPARE (2) is taken
+     * @param threads number of threads
+     * @return the Render object itself*/
+    public Render setMultithreading(int threads)
+    {if(threads< 0) throw new IllegalArgumentException("Multithreading must be 0 or higher");
+        if(threads!= 0) _threads= threads;
+        else {int cores= Runtime.getRuntime().availableProcessors() -SPARE_THREADS;
+            _threads= cores<= 2 ? 1 : cores;}
+        return this;}
+    /*** Set debug printing on
+     * @return the Render object itself*/
+    public Render setDebugPrint() { _print= true;
+        return this; }
 
     /**
      * Constructor without supersampling effect, it reffers to another constructor
@@ -73,12 +89,11 @@ public class Render {
      * The function that saves the 3D scene's 2D representation in matrix
      */
     public void renderImage() {
-       // if(numSuperSampling==0) {
-            //String name = this.imageWriter.getImageName();
+
             this.imageWriter = new ImageWriter(imageWriter.getImageName(), imageWriter.getWidth(), imageWriter.getHeight(), imageWriter.getNx()*numSuperSampling, imageWriter.getNy()*numSuperSampling);
             java.awt.Color background = scene.getBackground().getColor();
             Camera camera = scene.getCamera();
-            Intersectable geometries = scene.getGeometries();
+           // Intersectable geometries = scene.getGeometries();
             double distance = scene.getDistance();
             Ray ray;
             // number of pixels in the rows of the view plane
@@ -93,19 +108,85 @@ public class Render {
 
             for (int row = 0; row < Ny; row++) {
                 for (int column = 0; column < Nx; column++) {
-                    ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
-                    List<Intersectable.GeoPoint> intersectionPoints = scene.getGeometries().findIntersections(ray);
-                    if (intersectionPoints == null) {
-                        imageWriter.writePixel(column, row, background);
-                    } else {
-                        Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
-                        imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint, ray).getColor());
+                    final Pixel thePixel= new Pixel(Ny, Nx); // Main pixel management object
+                    Thread[] threads= new Thread[_threads];
+                    for(int i= _threads-1; i>= 0; --i) {
+                        int finalColumn = column;
+                        int finalRow = row;
+                        threads[i] = new Thread(() -> {
+                            Pixel pixel= new Pixel();
+                            while(thePixel.nextPixel(pixel)) {
+                                final Ray CurrRay = camera.constructRayThroughPixel(Nx, Ny, finalColumn, finalRow, distance, width, height);
+                                List<Intersectable.GeoPoint> intersectionPoints = scene.getGeometries().findIntersections(CurrRay);
+                                if (intersectionPoints == null) {
+                                    imageWriter.writePixel(finalColumn, finalRow, background);
+                                } else {
+                                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                                    imageWriter.writePixel(finalColumn/*-1*/, finalRow/*-1*/, calcColor(closestPoint, CurrRay).getColor());
+                                }
+
+                            }
+                        });
+
+
                     }
+                    for(Thread thread: threads) thread.start();
+                    for(Thread thread: threads) try{ thread.join(); } catch(Exception e) {}
+                    if(_print) System.out.printf("\r100%%\n");
                 }
+//                    ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
+//                    List<Intersectable.GeoPoint> intersectionPoints = scene.getGeometries().findIntersections(ray);
+//                    if (intersectionPoints == null) {
+//                        imageWriter.writePixel(column, row, background);
+//                    } else {
+//                        Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+//                        imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint, ray).getColor());
+//                    }
+                //}
             }
 
 
     }
+
+    /**
+     * renderImage function that does not use threads
+     * (for more confidence, it the thread version will not work)
+     */
+    public void renderImageWithoutThreads() {
+        // if(numSuperSampling==0) {
+        //String name = this.imageWriter.getImageName();
+        this.imageWriter = new ImageWriter(imageWriter.getImageName(), imageWriter.getWidth(), imageWriter.getHeight(), imageWriter.getNx()*numSuperSampling, imageWriter.getNy()*numSuperSampling);
+        java.awt.Color background = scene.getBackground().getColor();
+        Camera camera = scene.getCamera();
+        Intersectable geometries = scene.getGeometries();
+        double distance = scene.getDistance();
+        Ray ray;
+        // number of pixels in the rows of the view plane
+        int width = (int) imageWriter.getWidth();
+        // number of pixels in the columns of the view plane
+        int height = (int) imageWriter.getHeight();
+
+        //  width of the image.
+        int Nx = imageWriter.getNx();
+        // height of the image
+        int Ny = imageWriter.getNy();
+
+        for (int row = 0; row < Ny; row++) {
+            for (int column = 0; column < Nx; column++) {
+                ray = camera.constructRayThroughPixel(Nx, Ny, column, row, distance, width, height);
+                List<Intersectable.GeoPoint> intersectionPoints = scene.getGeometries().findIntersections(ray);
+                if (intersectionPoints == null) {
+                    imageWriter.writePixel(column, row, background);
+                } else {
+                    Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
+                    imageWriter.writePixel(column/*-1*/, row/*-1*/, calcColor(closestPoint, ray).getColor());
+                }
+            }
+        }
+
+
+    }
+
 
     /**
      * function that should calculate the color of specific point
@@ -400,13 +481,7 @@ public class Render {
             nSamples = samples;
         }
 
-        /**
-         * Function that makes the supersampling effect by making the average color of supersampling^2
-         * pixels and saving it to the new image
-         * @param image
-         * @return
-         */
-        public BufferedImage superSamplingImprovement(BufferedImage image) {
+        public BufferedImage superSamplingImprovementWithoutAcceleration(BufferedImage image) {
             BufferedImage output = new BufferedImage(image.getColorModel(), image.getColorModel().createCompatibleWritableRaster(outWidth, outHeight), false, new Hashtable<String, Object>());
             WritableRaster sourceRaster = image.getRaster();
             WritableRaster outRaster = output.getRaster();
@@ -449,8 +524,190 @@ public class Render {
 
             return output;
         }
+        /**
+         * Function that makes the supersampling effect by making the average color of supersampling^2
+         * pixels and saving it to the new image
+         * @param image
+         * @return
+         */
+        public BufferedImage superSamplingImprovement(BufferedImage image) {
+            BufferedImage output = new BufferedImage(image.getColorModel(), image.getColorModel().createCompatibleWritableRaster(outWidth, outHeight), false, new Hashtable<String, Object>());
+            WritableRaster sourceRaster = image.getRaster();
+            WritableRaster outRaster = output.getRaster();
+            int sourceNumBands = sourceRaster.getNumBands();
+
+            for(int x = 0; x < outRaster.getWidth(); x+=nSamples) {
+                for(int y = 0; y < outRaster.getHeight(); y+=nSamples) {
+                    double[] newValues = new double[sourceNumBands];
+                    for(int k = 0; k < sourceNumBands; k++){
+                        int pixel[][] = new int[nSamples][nSamples];
+                        for(int i=0; i<nSamples; i++)
+                            for (int j=0; j<nSamples; j++)
+                                pixel[i][j]=sourceRaster.getSample(x * nSamples + i, y * nSamples + j, k);
+                        newValues[k]=adaptiveSuperSampling(pixel, x, y, 0);
+
+                    }
+
+
+                    /*for(int i = 0; i < nSamples; i++) {
+                        for(int j = 0; j < nSamples; j++) {
+                            for(int k = 0; k < sourceNumBands; k++) {
+                                try {
+                                    newValues[k] += sourceRaster.getSample(x * nSamples + i, y * nSamples + j, k);
+
+                                }
+                                catch (Exception ex){
+                                    System.out.println("width = " + sourceRaster.getWidth());
+                                    System.out.println("height= "+ sourceRaster.getHeight());
+                                    System.out.println("samples= "+ nSamples);
+                                    //System.out.println("SystemModelTranslateY" + sourceRaster.getSys);
+                                    throw ex;
+                                }
+                            }
+                        }
+                    }*/
+
+                    for(int i = 0; i < newValues.length; i++) {
+                        outRaster.setSample(x, y, i, newValues[i]);
+                    }
+
+
+                }
+            }
+
+            return output;
+        }
 
         private int outWidth, outHeight, nSamples;
+        private int maxDepth;
+
+        double adaptiveSuperSampling(int[][] pixel, int x, int y,  int counter){
+            maxDepth=nSamples*10;
+            int pixSize = pixel.length;
+            if(pixel[0][pixSize-1]==pixel[0][0]&&
+                    pixel[0][0]==pixel[pixSize-1][0]&&
+                    pixel[0][0]==pixel[pixSize-1][pixSize-1] ||
+                    counter==maxDepth) {
+
+                return pixel[0][0];
+            }
+            else {
+                counter+=1;
+                int  topLeft [][];
+               int topRight[][];
+               int downLeft[][];
+               int downRight[][];
+
+               if (pixSize%2==0) {
+                   topRight = new int[pixSize / 2][pixSize / 2];
+                   topLeft =new int[pixSize/2][pixSize/2];
+                   downRight=new int[pixSize/2][pixSize/2];
+                   downLeft=new int[pixSize/2][pixSize/2];
+               }
+               else {topRight=new int[(pixSize/2)+1][(pixSize/2)+1];
+                    topLeft = new int[(pixSize/2)+1][(pixSize/2)+1];
+                downLeft = new int[(pixSize/2)+1][(pixSize/2)+1];
+               downRight = new int[(pixSize/2)+1][(pixSize/2)+1];}
+
+                for(int copyI=0; copyI<pixSize/2; copyI++){
+                    for (int copyJ=0; copyJ<pixSize/2; copyJ++){
+
+                        topLeft[copyI][copyJ]=pixel[copyI][copyJ];
+                    }
+                }
+                for(int copyI=pixSize/2; copyI<pixSize; copyI++){
+                    for (int copyJ=0; copyJ<pixSize/2; copyJ++){
+
+                        topRight[copyI-pixSize/2][copyJ]=pixel[copyI][copyJ];
+                    }
+                }
+                for(int copyI=0; copyI<pixSize/2; copyI++){
+                    for (int copyJ=pixSize/2; copyJ<pixSize; copyJ++){
+
+                        downLeft[copyI][copyJ-pixSize/2]=pixel[copyI][copyJ];
+                    }
+                }
+                for(int copyI=pixSize/2; copyI<pixSize; copyI++){
+                    for (int copyJ=pixSize/2; copyJ<pixSize; copyJ++){
+
+                        downRight[copyI-pixSize/2][copyJ-pixSize/2]=pixel[copyI][copyJ];
+                    }
+                }
+                return (adaptiveSuperSampling(topLeft, x, y, counter)+
+                        adaptiveSuperSampling(topRight, x+nSamples/counter, y,  counter)
+                        +adaptiveSuperSampling(downLeft, x, y+nSamples/counter, counter)
+                        +adaptiveSuperSampling(downRight, x+nSamples/counter, y+nSamples/counter, counter))/4;
+            }
+        }
 
     }
+    private class Pixel{
+        private long _maxRows= 0;     // Ny
+        private long _maxCols= 0; // Nx
+        private long _pixels= 0;// Total number of pixels: Nx*Ny
+        public volatile int row= 0;// Last processed row
+        public volatile int col= -1;// Last processed column
+        private long _counter= 0;// Total number of pixels processed
+        private int _percents= 0;// Percent of pixels processed
+        private long _nextCounter= 0;// Next amount of processed pixels for percent progress
+        /*** The constructor for initializing the main follow up Pixel object
+         * @parammaxRowsthe amount of pixel rows
+         * @parammaxColsthe amount of pixel columns*/
+        public Pixel(int maxRows, int maxCols) {
+            _maxRows= maxRows;
+            _maxCols= maxCols;
+            _pixels= maxRows* maxCols;
+            _nextCounter= _pixels/ 100;
+            if(Render.this._print)
+                System.out.printf("\r %02d%%", _percents);}
+        /***  Default constructor for secondary Pixel objects*/
+        public Pixel() {}
+        /*** Public function for getting next pixel number into secondary Pixel object.
+         *  The function prints also progress percentage in the console window.
+         *  @param target targetsecondary Pixel object to copy the row/column of the next pixel
+         *  @returntrue if the work still in progress, -1 if it's done*/
+        public boolean nextPixel(Pixel target)
+        {
+            int percents= nextP(target);
+            if(_print&& percents> 0)
+                System.out.printf("\r %02d%%", percents);
+            if(percents>= 0)
+                return true;
+            if(_print)
+                System.out.printf("\r %02d%%", 100);
+            return false;
+        }
+
+        /*** Internal function for thread-safe manipulating of main follow up Pixel object
+         * -this function is critical section for all the threads,
+         * and main Pixel object data is the shared data of this critical section.<br/>
+         * The function provides next pixel number each call.
+         * @param target targetsecondary Pixel object to copy the row/column of the next pixel
+         * @return the progress percentage for follow up: if it is 0 -nothing to print,
+         * if it is -1 -the task is finished, any other value -the progress percentage
+         * (only when it changes)*/
+        private synchronized int nextP(Pixel target) {
+            ++col;
+            ++_counter;
+            if(col< _maxCols)
+            {target.row= this.row;
+                target.col= this.col;
+                if(_print&& _counter== _nextCounter) {
+                    ++_percents;
+                    _nextCounter= _pixels* (_percents+ 1) / 100;
+                    return _percents;
+                }
+                return 0;}
+            ++row;
+            if(row< _maxRows) {
+                col= 0;
+                if(_print&& _counter== _nextCounter) {
+                    ++_percents;
+                    _nextCounter= _pixels* (_percents+ 1) / 100;
+                    return _percents;}
+                return 0;}
+            return -1;}
+    }
+
+
 }
