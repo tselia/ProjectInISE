@@ -6,10 +6,7 @@
  */
 package unittests.renderer;
 
-import elements.AmbientLight;
-import elements.Camera;
-import elements.DirectionalLight;
-import elements.PointLight;
+import elements.*;
 import geometries.Sphere;
 import geometries.Triangle;
 import org.junit.jupiter.api.Test;
@@ -131,12 +128,13 @@ public class MiniprojectOnePicture {
         );
 
 
-        scene.addLights(new DirectionalLight(new Color(255, 205, 100), new Vector(1, 1, 1)));
+        scene.addLights(new PointLight(new Color(255, 205, 100),/* new Vector(1, 1, 1),*/ new Point3D(-755, -440, 100), 0.3, 0.4, 100)
+        , new DirectionalLight(new Color(255, 255, 100), new Vector(0.5, 1, -2)));
 
 
 
 
-        ImageWriter imageWriter = new ImageWriter("SolarSystemSupersampledThreads", 800, 500, 1600, 1000);
+        ImageWriter imageWriter = new ImageWriter("SolarSystemTwoLightsNew", 800, 500, 1600, 1000);
         Render render = new Render(imageWriter, scene, 10);
 
         render.renderImage();

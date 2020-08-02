@@ -562,10 +562,10 @@ public class Render {
         }
 
         private int outWidth, outHeight, nSamples;
-        private int maxDepth;
+        //private int maxDepth;
 
         double adaptiveSuperSampling(int[][] pixel, int x, int y,  int counter){
-            maxDepth=nSamples;
+            int maxDepth=nSamples;
             int pixSize = pixel.length;
             if(pixel[0][pixSize-1]==pixel[0][0]&&
                     pixel[0][0]==pixel[pixSize-1][0]&&
@@ -594,28 +594,29 @@ public class Render {
 
                 for(int copyI=0; copyI<pixSize/2; copyI++){
                     for (int copyJ=0; copyJ<pixSize/2; copyJ++){
-
+                        // data transport to the pixel that introduces top left corner of the current pixel
                         topLeft[copyI][copyJ]=pixel[copyI][copyJ];
                     }
                 }
                 for(int copyI=pixSize/2; copyI<pixSize; copyI++){
                     for (int copyJ=0; copyJ<pixSize/2; copyJ++){
-
+                    // data transport to the pixel that introduces top right corner of the current pixel
                         topRight[copyI-pixSize/2][copyJ]=pixel[copyI][copyJ];
                     }
                 }
                 for(int copyI=0; copyI<pixSize/2; copyI++){
                     for (int copyJ=pixSize/2; copyJ<pixSize; copyJ++){
-
+                        // data transport to the pixel that introduces down left corner of the current pixel
                         downLeft[copyI][copyJ-pixSize/2]=pixel[copyI][copyJ];
                     }
                 }
                 for(int copyI=pixSize/2; copyI<pixSize; copyI++){
                     for (int copyJ=pixSize/2; copyJ<pixSize; copyJ++){
-
+                        // data transport to the pixel that introduces down right corner of the current pixel
                         downRight[copyI-pixSize/2][copyJ-pixSize/2]=pixel[copyI][copyJ];
                     }
                 }
+                //computating the average color of four corners
                 return (adaptiveSuperSampling(topLeft, x, y, counter)+
                         adaptiveSuperSampling(topRight, x+nSamples/counter, y,  counter)
                         +adaptiveSuperSampling(downLeft, x, y+nSamples/counter, counter)

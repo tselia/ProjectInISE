@@ -301,7 +301,7 @@ public class MathOperations {
     /**
      * The method finds the root(roots) of quadrant equation
      * Code source: https://www.w3resource.com/java-exercises/conditional-statement/java-conditional-statement-exercise-2.php
-     * Code changes by Polina Frolov Korogodsly and Tselia Tebol
+     * Code changes by Polina Frolov Korogodsky and Tselia Tebol
      * @param a
      * @param b
      * @param c
