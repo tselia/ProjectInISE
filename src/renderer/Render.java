@@ -587,9 +587,9 @@ public class Render {
                    downRight=new int[pixSize/2][pixSize/2];
                    downLeft=new int[pixSize/2][pixSize/2];
                }
-               else {topRight=new int[(pixSize/2)+1][(pixSize/2)+1];
-                    topLeft = new int[(pixSize/2)+1][(pixSize/2)+1];
-                downLeft = new int[(pixSize/2)+1][(pixSize/2)+1];
+               else {topRight=new int[(pixSize/2)][(pixSize/2)+1];
+                    topLeft = new int[(pixSize/2)][(pixSize/2)];
+                downLeft = new int[(pixSize/2)+1][(pixSize/2)];
                downRight = new int[(pixSize/2)+1][(pixSize/2)+1];}
 
                 for(int copyI=0; copyI<pixSize/2; copyI++){
