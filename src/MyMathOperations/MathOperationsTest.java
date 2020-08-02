@@ -44,4 +44,17 @@ class MathOperationsTest {
         assertTrue(MathOperations.solveQuadrantEquation(1, 4, -21)[1]==-7||MathOperations.solveQuadrantEquation(1, 4, -21)[1]==3);
         assertTrue(MathOperations.solveQuadrantEquation(1, 4, -21)[0]!=MathOperations.solveQuadrantEquation(1, 4, -21)[1]);
     }
+
+    @Test
+    public void inverse(){
+        double[][] matrix= new double[3][3];
+        matrix[0] = new double[]{1, 2, 0};
+        matrix[1] = new double[]{5, 0, 7};
+        matrix[2] = new double[]{1, 0, 0};
+        double[][] inversedMatrix = MathOperations.invert(matrix);
+        double[][] simpleMatrix = MathOperations.multiplyMatrices(matrix, inversedMatrix, 3, 3, 3);
+        for(int i=0; i<3; i++)
+            for(int j=0; j<3; j++)
+                System.out.println(simpleMatrix[i][j]);
+    }
 }

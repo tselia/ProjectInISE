@@ -122,7 +122,7 @@ public class Render {
                                     imageWriter.writePixel(finalColumn, finalRow, background);
                                 } else {
                                     Intersectable.GeoPoint closestPoint = getClosestPoint(intersectionPoints);
-                                    imageWriter.writePixel(finalColumn/*-1*/, finalRow/*-1*/, calcColor(closestPoint, CurrRay).getColor());
+                                    imageWriter.writePixel(finalColumn, finalRow, calcColor(closestPoint, CurrRay).getColor());
                                 }
 
                             }
