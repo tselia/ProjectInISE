@@ -481,7 +481,7 @@ public class Render {
             nSamples = samples;
         }
 
-        public BufferedImage superSamplingImprovementWithoutAcceleration(BufferedImage image) {
+        public BufferedImage superSamplingImprovement(BufferedImage image) {
             BufferedImage output = new BufferedImage(image.getColorModel(), image.getColorModel().createCompatibleWritableRaster(outWidth, outHeight), false, new Hashtable<String, Object>());
             WritableRaster sourceRaster = image.getRaster();
             WritableRaster outRaster = output.getRaster();
@@ -530,7 +530,7 @@ public class Render {
          * @param image
          * @return
          */
-        public BufferedImage superSamplingImprovement(BufferedImage image) {
+        public BufferedImage superSamplingImprovementWithAcceleration(BufferedImage image) {
             BufferedImage output = new BufferedImage(image.getColorModel(), image.getColorModel().createCompatibleWritableRaster(outWidth, outHeight), false, new Hashtable<String, Object>());
             WritableRaster sourceRaster = image.getRaster();
             WritableRaster outRaster = output.getRaster();
