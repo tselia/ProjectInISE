@@ -88,7 +88,7 @@ public class Render {
     /**
      * The function that saves the 3D scene's 2D representation in matrix
      */
-    public void renderImage() {
+    public void renderImageWithThreads() {
 
             this.imageWriter = new ImageWriter(imageWriter.getImageName(), imageWriter.getWidth(), imageWriter.getHeight(), imageWriter.getNx()*numSuperSampling, imageWriter.getNy()*numSuperSampling);
             java.awt.Color background = scene.getBackground().getColor();
@@ -152,7 +152,7 @@ public class Render {
      * renderImage function that does not use threads
      * (for more confidence, it the thread version will not work)
      */
-    public void renderImageWithoutThreads() {
+    public void renderImage() {
         // if(numSuperSampling==0) {
         //String name = this.imageWriter.getImageName();
         this.imageWriter = new ImageWriter(imageWriter.getImageName(), imageWriter.getWidth(), imageWriter.getHeight(), imageWriter.getNx()*numSuperSampling, imageWriter.getNy()*numSuperSampling);
@@ -544,31 +544,14 @@ public class Render {
                         for(int i=0; i<nSamples; i++)
                             for (int j=0; j<nSamples; j++)
                                 pixel[i][j]=sourceRaster.getSample(x * nSamples + i, y * nSamples + j, k);
-                        newValues[k]=adaptiveSuperSampling(pixel, x, y, 0);
+                                newValues[k]=adaptiveSuperSampling(pixel, x, y, nSamples);
 
                     }
 
 
-                    /*for(int i = 0; i < nSamples; i++) {
-                        for(int j = 0; j < nSamples; j++) {
-                            for(int k = 0; k < sourceNumBands; k++) {
-                                try {
-                                    newValues[k] += sourceRaster.getSample(x * nSamples + i, y * nSamples + j, k);
-
-                                }
-                                catch (Exception ex){
-                                    System.out.println("width = " + sourceRaster.getWidth());
-                                    System.out.println("height= "+ sourceRaster.getHeight());
-                                    System.out.println("samples= "+ nSamples);
-                                    //System.out.println("SystemModelTranslateY" + sourceRaster.getSys);
-                                    throw ex;
-                                }
-                            }
-                        }
-                    }*/
-
                     for(int i = 0; i < newValues.length; i++) {
-                        outRaster.setSample(x, y, i, newValues[i]);
+
+                            outRaster.setSample(x, y, i, newValues[i]);
                     }
 
 
@@ -582,7 +565,7 @@ public class Render {
         private int maxDepth;
 
         double adaptiveSuperSampling(int[][] pixel, int x, int y,  int counter){
-            maxDepth=nSamples*10;
+            maxDepth=nSamples;
             int pixSize = pixel.length;
             if(pixel[0][pixSize-1]==pixel[0][0]&&
                     pixel[0][0]==pixel[pixSize-1][0]&&

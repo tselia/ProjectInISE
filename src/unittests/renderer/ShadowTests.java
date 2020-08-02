@@ -34,8 +34,8 @@ public class ShadowTests {
         scene.addLights(new SpotLight(new Color(400, 240, 0), //
                 new Point3D(-100, 100, -200), new Vector(1, -1, 3), 1, 1E-5, 1.5E-7));
 
-        ImageWriter imageWriter = new ImageWriter("sphereTriangleInitial - adaptedsupersampled", 200, 200, 400, 400);
-        Render render = new Render(imageWriter, scene, 20);
+        ImageWriter imageWriter = new ImageWriter("sphereTriangleInitial - not good by def", 200, 200, 400, 400);
+        Render render = new Render(imageWriter, scene, 2);
 
         render.renderImageWithoutThreads();
         render.writeToImage();
